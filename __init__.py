@@ -17,7 +17,8 @@ DRIVER = get_driver()
 
 try:
     NICKNAME: str = list(DRIVER.config.nickname)[0]
-except KeyError:
+except Exception as e:
+    logger.info(f"缺少超级用户配置文件，{e}！")
     NICKNAME = 'bot'
 
 try:
@@ -29,21 +30,21 @@ except Exception as e:
 put_bot = XiuConfig().put_bot
 shield_group = XiuConfig().shield_group
 
-src = 'src.plugins.'
+src = ''
 load_all_plugins(
     [
-        f'{src}nonebot_plugin_xiuxian.xiuxian_base',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_boss',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_bank',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_sect',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_info',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_buff',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_back',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_rift',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_mixelixir',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_work',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_impart',
-        f'{src}nonebot_plugin_xiuxian.xiuxian_impart_pk',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_base',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_boss',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_bank',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_sect',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_info',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_buff',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_back',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_rift',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_mixelixir',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_work',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_impart',
+        f'{src}nonebot_plugin_xiuxian_2.xiuxian_impart_pk',
     ],
     [],
 )
