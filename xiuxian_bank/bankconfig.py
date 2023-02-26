@@ -27,7 +27,7 @@ def get_config():
             if key not in list(config.keys()):
                 config[key] = CONFIG[key]
         savef(config)
-    except (OSError, IOError, LookupError):
+    except:
         config = CONFIG
         savef(config)
     return config

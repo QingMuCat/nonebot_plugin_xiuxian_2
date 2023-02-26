@@ -24,7 +24,7 @@ def download_xiuxian_data():
             with open(version_path, 'r', encoding='utf-8') as f:
                 data = f.read()
                 f.close()
-        except (OSError, IOError, FileNotFoundError):
+        except:
             pass
         if str(data) == str(XiuConfig().version):
             logger.info("修仙配置校核完成！")

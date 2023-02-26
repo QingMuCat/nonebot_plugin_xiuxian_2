@@ -24,7 +24,7 @@ class workhandle(XiuxianJsonDate):
             try:
                 data = readf(user_id)
                 return data[name][2]
-            except (OSError, IOError, LookupError):
+            except:
                 pass
 
         elif key == 2:  # 如果是结算，则获取结果

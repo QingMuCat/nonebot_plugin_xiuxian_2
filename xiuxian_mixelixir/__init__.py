@@ -509,7 +509,7 @@ async def _mix_elixir(bot: Bot, event: GroupMessageEvent, mode: str = EventPlain
                         mix_elixir_info['炼丹经验'] += goods_info['mix_exp'] * num
                         msg += f"获得炼丹经验{goods_info['mix_exp'] * num}点"
                     mix_elixir_info['炼丹记录'][id]['num'] += num
-                except (OSError, IOError, LookupError):
+                except:
                     mix_elixir_info['炼丹记录'][id] = {}
                     mix_elixir_info['炼丹记录'][id]['name'] = goods_info['name']
                     mix_elixir_info['炼丹记录'][id]['num'] = num

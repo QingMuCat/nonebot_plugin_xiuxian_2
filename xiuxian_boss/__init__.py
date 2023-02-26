@@ -116,7 +116,7 @@ async def set_boss_():
         for g in groups:
             try:
                 group_boss[g]
-            except (OSError, IOError, LookupError):
+            except:
                 group_boss[g] = []
 
             if len(group_boss[g]) >= config['Boss个数上限']:
@@ -179,7 +179,7 @@ async def boss_delete_(bot: Bot, event: GroupMessageEvent, args: Message = Comma
     bosss = None
     try:
         bosss = group_boss[group_id]
-    except (OSError, IOError, LookupError):
+    except:
         msg = f'本群尚未生成世界Boss，请等待世界boss刷新!'
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -257,7 +257,7 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
     bosss = None
     try:
         bosss = group_boss[group_id]
-    except (OSError, IOError, LookupError):
+    except:
         msg = f'本群尚未生成世界Boss，请等待世界boss刷新!'
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -288,7 +288,7 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
 
     try:
         battle_flag[group_id]
-    except (OSError, IOError, LookupError):
+    except:
         battle_flag[group_id] = False
 
     if battle_flag[group_id]:
@@ -417,7 +417,7 @@ async def boss_info_(bot: Bot, event: GroupMessageEvent, args: Message = Command
     bosss = None
     try:
         bosss = group_boss[group_id]
-    except (OSError, IOError, LookupError):
+    except:
         msg = f'本群尚未生成世界Boss，请等待世界boss刷新!'
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -505,7 +505,7 @@ async def create_(bot: Bot, event: GroupMessageEvent):
     bossinfo = createboss_root()
     try:
         group_boss[group_id]
-    except (OSError, IOError, LookupError):
+    except:
         group_boss[group_id] = []
 
     if len(group_boss[group_id]) >= config['Boss个数上限']:
@@ -729,7 +729,7 @@ PLAYERSDATA = Path() / "data" / "xiuxian" / "players"
 def get_user_boss_fight_info(user_id):
     try:
         user_boss_fight_info = read_user_boss_fight_info(user_id)
-    except (OSError, IOError, LookupError):
+    except:
         user_boss_fight_info = {'boss_integral': 0}
         save_user_boss_fight_info(user_id, user_boss_fight_info)
     return user_boss_fight_info

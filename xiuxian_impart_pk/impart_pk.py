@@ -13,7 +13,7 @@ class IMPART_PK(object):
         try:
             with open(self.data_path, 'r', encoding='utf-8') as f:
                 self.data = json.load(f)
-        except (OSError, IOError, LookupError):
+        except:
             self.info = {}
             data = json.dumps(self.info, ensure_ascii=False, indent=4)
             with open(self.data_path, mode="x", encoding="UTF-8") as f:
@@ -38,7 +38,7 @@ class IMPART_PK(object):
         try:
             if self.data[user_id]:
                 return True
-        except (OSError, IOError, LookupError):
+        except:
             self.data[user_id] = {"pk_num": 3,
                                   "win_num": 0
                                   }
@@ -55,7 +55,7 @@ class IMPART_PK(object):
         try:
             data_ = self.data[user_id]
             return data_
-        except (OSError, IOError, LookupError):
+        except:
             return None
 
     def update_user_data(self, user_id, type_):
@@ -82,7 +82,7 @@ class IMPART_PK(object):
         try:
             dict_ = self.data
             return dict_
-        except (OSError, IOError, LookupError):
+        except:
             return None
 
     def re_data(self):

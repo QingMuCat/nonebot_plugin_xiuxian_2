@@ -131,7 +131,7 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
             reap_img = None
             try:
                 reap_img = random.choice(img_list)
-            except (OSError, IOError, LookupError):
+            except:
                 msg = "请检查卡图数据完整！"
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)

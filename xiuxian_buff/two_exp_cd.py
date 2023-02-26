@@ -13,7 +13,7 @@ class TWO_EXP_CD(object):
         try:
             with open(self.data_path, 'r', encoding='utf-8') as f:
                 self.data = json.load(f)
-        except (OSError, IOError, LookupError):
+        except:
             self.info = {"two_exp_cd": {}}
             data = json.dumps(self.info, ensure_ascii=False, indent=4)
             with open(self.data_path, mode="x", encoding="UTF-8") as f:
@@ -38,7 +38,7 @@ class TWO_EXP_CD(object):
         try:
             if self.data["two_exp_cd"][user_id] >= 0:
                 return self.data["two_exp_cd"][user_id]
-        except (OSError, IOError, LookupError):
+        except:
             self.data["two_exp_cd"][user_id] = 0
             self.__save()
             return self.data["two_exp_cd"][user_id]

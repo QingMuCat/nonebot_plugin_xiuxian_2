@@ -308,7 +308,7 @@ async def sect_elixir_get_(bot: Bot, event: GroupMessageEvent):
                         try:
                             give_dict[id] += 1
                             i += 1
-                        except (OSError, IOError, LookupError):
+                        except:
                             give_dict[id] = 1
                             i += 1
                 msg = f"\n道友成功领取到丹药：渡厄丹 1 枚！\n"
@@ -1662,7 +1662,7 @@ def isUserTask(user_id):
     Flag = False
     try:
         userstask[user_id]
-    except (OSError, IOError, LookupError):
+    except:
         userstask[user_id] = {}
 
     if userstask[user_id] != {}:

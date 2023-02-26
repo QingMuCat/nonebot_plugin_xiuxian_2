@@ -22,7 +22,7 @@ class IMPART_DATA(object):
         try:
             with open(self.data_path_person, 'r', encoding='utf-8') as f:
                 self.data_person = json.load(f)
-        except (OSError, IOError, LookupError):
+        except:
             self.info = {}
             data = json.dumps(self.info, ensure_ascii=False, indent=4)
             with open(self.data_path_person, mode="x", encoding="UTF-8") as f:
@@ -39,7 +39,7 @@ class IMPART_DATA(object):
                     pass
                 else:
                     logger.info("传承数据有未知类型错误！请检查！")
-        except (OSError, IOError, LookupError):
+        except:
             pass
         self.__save()
 
@@ -87,7 +87,7 @@ class IMPART_DATA(object):
         try:
             list_data_person_list = self.data_person[user_id]
             return list_data_person_list
-        except (OSError, IOError, LookupError):
+        except:
             return list_data_person_list
 
     def data_all_keys(self):

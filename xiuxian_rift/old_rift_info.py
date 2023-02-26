@@ -12,7 +12,7 @@ class OLD_RIFT_INFO(object):
         try:
             with open(self.data_path, 'r', encoding='utf-8') as f:
                 self.data = json.load(f)
-        except (OSError, IOError, LookupError):
+        except:
             self.info = {}
             data = json.dumps(self.info, ensure_ascii=False, indent=4)
             with open(self.data_path, mode="x", encoding="UTF-8") as f:

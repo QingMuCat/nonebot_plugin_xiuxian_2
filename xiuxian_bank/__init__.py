@@ -89,7 +89,7 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
     user_id = user_info.user_id
     try:
         bankinfo = readf(user_id)
-    except (OSError, IOError, LookupError):
+    except:
         bankinfo = {
             'savestone': 0,
             'savetime': str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')),

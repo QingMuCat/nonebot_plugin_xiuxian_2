@@ -20,7 +20,7 @@ def Player_fight(player1: dict, player2: dict, type_in, bot_id):
     user1_mp_buff = user1_main_buff_data['mpbuff'] if user1_main_buff_data is not None else 0
     try:
         user_1_impart_data = xiuxian_impart.get_user_message(player1['user_id'])
-    except (OSError, IOError, LookupError):
+    except:
         user_1_impart_data = None
     user_1_impart_hp = user_1_impart_data.impart_hp_per if user_1_impart_data is not None else 0
     user_1_impart_mp = user_1_impart_data.impart_mp_per if user_1_impart_data is not None else 0
@@ -33,7 +33,7 @@ def Player_fight(player1: dict, player2: dict, type_in, bot_id):
     user2_mp_buff = user2_main_buff_data['mpbuff'] if user2_main_buff_data is not None else 0
     try:
         user_2_impart_data = xiuxian_impart.get_user_message(player2['user_id'])
-    except (OSError, IOError, LookupError):
+    except:
         user_2_impart_data = None
     user_2_impart_hp = user_1_impart_data.impart_hp_per if user_2_impart_data is not None else 0
     user_2_impart_mp = user_1_impart_data.impart_mp_per if user_2_impart_data is not None else 0
@@ -773,7 +773,7 @@ def get_turnatk(player, buff=0):
     try:
         user_id = player['user_id']
         impart_data = xiuxian_impart.get_user_message(user_id)
-    except (OSError, IOError, LookupError):
+    except:
         impart_data = None
     impart_know_per = impart_data.impart_know_per if impart_data is not None else 0
     impart_burst_per = impart_data.impart_burst_per if impart_data is not None else 0

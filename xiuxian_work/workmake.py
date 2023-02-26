@@ -58,7 +58,7 @@ def get_random_item_type():
     for i, v in type_rate.items():
         try:
             temp_dict[i] = v["type_rate"]
-        except (OSError, IOError, LookupError):
+        except:
             continue
     key = [OtherSet().calculated(temp_dict)]
     return key

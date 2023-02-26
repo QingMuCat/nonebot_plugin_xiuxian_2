@@ -182,7 +182,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
             await explore_rift.finish()
         try:
             group_rift[group_id]
-        except (OSError, IOError, LookupError):
+        except:
             msg = '野外秘境尚未生成，请道友耐心等待!'
             if XiuConfig().img:
                 pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -265,7 +265,7 @@ async def complete_rift_(bot: Bot, event: GroupMessageEvent):
         rift_info = None
         try:
             rift_info = read_rift_data(user_id)
-        except (OSError, IOError, LookupError):
+        except:
             msg = '发生未知错误！'
             sql_message.do_work(user_id, 0)
             if XiuConfig().img:
@@ -364,7 +364,7 @@ async def break_rift_(bot: Bot, event: GroupMessageEvent):
         rift_info = None
         try:
             rift_info = read_rift_data(user_id)
-        except (OSError, IOError, LookupError):
+        except:
             msg = '发生未知错误！'
             sql_message.do_work(user_id, 0)
             if XiuConfig().img:

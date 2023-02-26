@@ -59,28 +59,28 @@ class UserBuffDate:
     def get_user_main_buff_data(self):
         try:
             main_buff_data = items.get_data_by_item_id(self.BuffInfo.main_buff)
-        except (OSError, IOError, LookupError):
+        except:
             main_buff_data = None
         return main_buff_data
 
     def get_user_sec_buff_data(self):
         try:
             sec_buff_data = items.get_data_by_item_id(self.BuffInfo.sec_buff)
-        except (OSError, IOError, LookupError):
+        except:
             sec_buff_data = None
         return sec_buff_data
 
     def get_user_weapon_data(self):
         try:
             weapon_data = items.get_data_by_item_id(self.BuffInfo.faqi_buff)
-        except (OSError, IOError, LookupError):
+        except:
             weapon_data = None
         return weapon_data
 
     def get_user_armor_buff_data(self):
         try:
             armor_buff_data = items.get_data_by_item_id(self.BuffInfo.armor_buff)
-        except (OSError, IOError, LookupError):
+        except:
             armor_buff_data = None
         return armor_buff_data
 
@@ -198,7 +198,7 @@ def get_player_info(user_id, info_name):
                 if key not in list(player_info.keys()):
                     player_info[key] = MIXELIXIRINFOCONFIG[key]
             save_player_info(user_id, player_info, info_name)
-        except (OSError, IOError, LookupError):
+        except:
             player_info = MIXELIXIRINFOCONFIG
             save_player_info(user_id, player_info, info_name)
     return player_info
