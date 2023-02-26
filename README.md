@@ -28,7 +28,10 @@ git clone https://github.com/QingMuCat/nonebot_plugin_xiuxian_2.0
 ```
 git clone https://ghproxy.com/https://github.com/QingMuCat/nonebot_plugin_xiuxian_2.0
 ```
-
+- 使用gitee处拉取源码使用（同步更新）
+```
+git clone https://gitee.com/july-meow/nonebot_plugin_xiuxian_2.0
+```
 2、如果遇到问题，请先百度和查看下方的 【一些问题】
 
 3、如解决不了进交流群：760517008 提问，提问请贴上完整的日志
