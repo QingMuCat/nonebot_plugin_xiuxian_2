@@ -315,8 +315,9 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
         await battle.finish()
 
     player = {"user_id": None, "道号": None, "气血": None, "攻击": None, "真元": None, '会心': None, '防御': 0}
-    userinfo = XiuxianDateManage().get_user_real_info(user_id)
-    user_weapon_data = UserBuffDate(userinfo.user_id).get_user_weapon_data()
+    user_id = user_info.user_id
+    user_info = XiuxianDateManage().get_user_real_info(user_id)
+    user_weapon_data = UserBuffDate(user_info.user_id).get_user_weapon_data()
 
     impart_data = xiuxian_impart.get_user_message(user_id)
     boss_atk = impart_data.boss_atk if impart_data.boss_atk is not None else 0
@@ -325,16 +326,16 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
         player['会心'] = int((user_weapon_data['crit_buff'] + impart_know_per) * 100)
     else:
         player['会心'] = int(1 + impart_know_per * 100)
-    player['user_id'] = userinfo.user_id
-    player['道号'] = userinfo.user_name
-    player['气血'] = userinfo.hp
-    player['攻击'] = int(userinfo.atk * (1 + boss_atk))
-    player['真元'] = userinfo.mp
-    player['exp'] = userinfo.exp
+    player['user_id'] = user_info.user_id
+    player['道号'] = user_info.user_name
+    player['气血'] = user_info.hp
+    player['攻击'] = int(user_info.atk * (1 + boss_atk))
+    player['真元'] = user_info.mp
+    player['exp'] = user_info.exp
 
     bossinfo = group_boss[group_id][boss_num - 1]
     boss_rank = USERRANK[(bossinfo['jj'] + '中期')]
-    user_rank = USERRANK[userinfo.level]
+    user_rank = USERRANK[user_info.level]
     boss_old_hp = bossinfo['气血']  # 打之前的血量
     more_msg = ''
     battle_flag[group_id] = True

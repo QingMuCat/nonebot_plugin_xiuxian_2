@@ -119,13 +119,13 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
             await bank.finish()
 
         bankinfo, give_stone, timedeff = get_give_stone(bankinfo)
-        userinfonowstone = int(user_info.stone) - num
+        user_infonowstone = int(user_info.stone) - num
         bankinfo['savestone'] += num
         sql_message.update_ls(user_id, num, 2)
         sql_message.update_ls(user_id, give_stone, 1)
         bankinfo['savetime'] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         savef(user_id, bankinfo)
-        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n道友存入灵石{num}枚，当前所拥有灵石{userinfonowstone + give_stone}枚，灵庄存有灵石{bankinfo['savestone']}枚"
+        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n道友存入灵石{num}枚，当前所拥有灵石{user_infonowstone + give_stone}枚，灵庄存有灵石{bankinfo['savestone']}枚"
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -146,11 +146,11 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
         # 先结算利息
         bankinfo, give_stone, timedeff = get_give_stone(bankinfo)
 
-        userinfonowstone = int(user_info.stone) + num + give_stone
+        user_infonowstone = int(user_info.stone) + num + give_stone
         bankinfo['savestone'] -= num
         sql_message.update_ls(user_id, num + give_stone, 1)
         savef(user_id, bankinfo)
-        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n取出灵石{num}枚，当前所拥有灵石{userinfonowstone}枚，灵庄存有灵石{bankinfo['savestone']}枚!"
+        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n取出灵石{num}枚，当前所拥有灵石{user_infonowstone}枚，灵庄存有灵石{bankinfo['savestone']}枚!"
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -226,7 +226,7 @@ def get_give_stone(bankinfo):
     savetime = bankinfo['savetime']  # str
     nowtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # str
     timedeff = round((datetime.strptime(nowtime, '%Y-%m-%d %H:%M:%S') -
-                      datetime.strptime(savetime, '%Y-%m-%d %H:%M:%S')).total_seconds() / 3600, 2)
+                    datetime.strptime(savetime, '%Y-%m-%d %H:%M:%S')).total_seconds() / 3600, 2)
     give_stone = int(bankinfo['savestone'] * timedeff * BANKLEVEL[bankinfo['banklevel']]['interest'])
     bankinfo['savetime'] = nowtime
 
@@ -248,8 +248,8 @@ def savef(user_id, data):
         os.makedirs(PLAYERSDATA / user_id)
     FILEPATH = PLAYERSDATA / user_id / "bankinfo.json"
     data = json.dumps(data, ensure_ascii=False, indent=3)
-    savemode = "w" if os.path.exists(FILEPATH) else "x"
-    with open(FILEPATH, mode=savemode, encoding="UTF-8") as f:
+    save_model = "w" if os.path.exists(FILEPATH) else "x"
+    with open(FILEPATH, mode=save_model, encoding="UTF-8") as f:
         f.write(data)
         f.close()
     return True

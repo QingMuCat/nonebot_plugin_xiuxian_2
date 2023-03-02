@@ -97,7 +97,7 @@ async def get_boss_battle_info(user_info, rift_rank, bot_id):
     """获取Boss战事件的内容"""
     boss_data = STORY['战斗']['Boss战斗']["Boss数据"]
     player = {"user_id": None, "道号": None, "气血": None, "攻击": None, "真元": None, '会心': None, '防御': 0}
-    userinfo = sql_message.get_user_real_info(user_info.user_id)
+    user_info = sql_message.get_user_real_info(user_info.user_id)
     user1_weapon_data = UserBuffDate(user_info.user_id).get_user_weapon_data()
 
     impart_data = xiuxian_impart.get_user_message(user_info.user_id)
@@ -107,14 +107,14 @@ async def get_boss_battle_info(user_info, rift_rank, bot_id):
     else:
         player['会心'] = int(1 + impart_know_per * 100)
 
-    player['user_id'] = userinfo.user_id
-    player['道号'] = userinfo.user_name
-    player['气血'] = userinfo.hp
-    player['攻击'] = userinfo.atk
-    player['真元'] = userinfo.mp
-    player['exp'] = userinfo.exp
+    player['user_id'] = user_info.user_id
+    player['道号'] = user_info.user_name
+    player['气血'] = user_info.hp
+    player['攻击'] = user_info.atk
+    player['真元'] = user_info.mp
+    player['exp'] = user_info.exp
 
-    base_exp = userinfo.exp
+    base_exp = user_info.exp
     boss_info = {
         "name": random.choice(boss_data["name"]),
         "气血": int(base_exp * random.choice(boss_data["hp"])),
