@@ -41,6 +41,10 @@ git clone https://gitee.com/july-meow/nonebot_plugin_xiuxian_2.0
 2、子插件的配置会在插件运行后在子插件文件中生成config.json文件，该文件字段含义在同级目录的xxxconfig.py有备注。注意：修改配置只需要修改json即可，修改.py文件的话需要删除json文件才会生效，任何修改都需要重启bot<br>
 3.卡图下载地址：[卡图](https://cowtransfer.com/s/82b90d2b879d43):口令：k3jzr5，文件放置于data/xiuxian目录下<br>
 
+## 注意事项
+注意事项
+1.更新后boss不刷新 需要删除boss模块下 config.py
+2.修仙适配  适配1的境界只支持单个用户不支持批量
 
 ## 一些问题
 - 当为放置为plugins目录使用时，请修改根目录下__init__.py文件中的42行：src=''中的内容，填写的是存放插件的目录，一般情况下 src='src.plugins.'  如有不同请按照格式修改
