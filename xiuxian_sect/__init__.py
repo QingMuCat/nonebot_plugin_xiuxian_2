@@ -1620,7 +1620,7 @@ async def my_sect_(bot: Bot, event: GroupMessageEvent):
     owner_idx = [k for k, v in jsondata.sect_config_data().items() if v.get("title", "") == "宗主"]
     owner_position = int(owner_idx[0]) if len(owner_idx) == 1 else 0
     if sect_id:
-        _, sql_res = sql_message.scale_top()
+        sql_res = sql_message.scale_top()
         top_idx_list = [_[0] for _ in sql_res]
         if int(sect_info.elixir_room_level) == 0:
             elixir_room_name = "暂无"
