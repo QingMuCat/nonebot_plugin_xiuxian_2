@@ -169,11 +169,11 @@ async def impart_pk_now_(bot: Bot, event: GroupMessageEvent, args: Message = Com
     if not num:
         msg, win = await impart_pk_uitls.impart_pk_now_msg_to_bot(user_info.user_name, NICKNAME)
         if win == 1:
-            msg += f"战报：道友{user_info.user_name}获胜，获得思恋结晶10颗\n"
+            msg += f"战报：道友{user_info.user_name}获胜,获得思恋结晶10颗\n"
             impart_pk.update_user_data(user_info.user_id, True)
             xiuxian_impart.update_stone_num(10, user_id, 1)
         if win == 2:
-            msg += f"战报：道友{user_info.user_name}败了，消耗一次次数，获得思恋结晶5颗\n"
+            msg += f"战报：道友{user_info.user_name}败了,消耗一次次数,获得思恋结晶5颗\n"
             impart_pk.update_user_data(user_info.user_id, False)
             xiuxian_impart.update_stone_num(5, user_id, 1)
             if impart_pk.find_user_data(user_id)["pk_num"] <= 0 and xu_world.check_xu_world_user_id(user_id) is True:
@@ -244,8 +244,8 @@ async def impart_pk_now_(bot: Bot, event: GroupMessageEvent, args: Message = Com
             xiuxian_impart.update_stone_num(5, player_2, 1)
             msg_list.append(
                 {"type": "node", "data": {"name": f"虚神界战报", "uin": bot.self_id,
-                                          "content": f"道友{player_1_name}获得了胜利，获得了思恋结晶10颗！\n"
-                                                     f"道友{player_2_name}获得败了，消耗一次次数，获得了思恋结晶5颗！"}})
+                                          "content": f"道友{player_1_name}获得了胜利,获得了思恋结晶10!\n"
+                                                     f"道友{player_2_name}获得败了,消耗一次次数,获得了思恋结晶5颗!"}})
             if impart_pk.find_user_data(player_2)["pk_num"] <= 0:
                 msg_list.append(
                     {"type": "node", "data": {"name": f"虚神界变更", "uin": bot.self_id,
@@ -269,8 +269,8 @@ async def impart_pk_now_(bot: Bot, event: GroupMessageEvent, args: Message = Com
             xiuxian_impart.update_stone_num(5, player_1, 1)
             msg_list.append(
                 {"type": "node", "data": {"name": f"虚神界战报", "uin": bot.self_id,
-                                          "content": f"道友{player_2_name}获得了胜利，获得了思恋结晶10颗！\n"
-                                                     f"道友{player_1_name}获得败了，消耗一次次数，获得了思恋结晶5颗！"}})
+                                          "content": f"道友{player_2_name}获得了胜利,获得了思恋结晶10颗!\n"
+                                                     f"道友{player_1_name}获得败了,消耗一次次数,获得了思恋结晶5颗!"}})
             if impart_pk.find_user_data(player_1)["pk_num"] <= 0:
                 msg_list.append(
                     {"type": "node", "data": {"name": f"虚神界变更", "uin": bot.self_id,

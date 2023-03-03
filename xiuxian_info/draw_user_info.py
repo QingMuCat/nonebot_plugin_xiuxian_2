@@ -1,5 +1,12 @@
+try:
+    import ujson as json
+except ImportError:
+    import json
+import asyncio    
+from nonebot.log import logger
+from io import BytesIO    
 from PIL import Image, ImageDraw, ImageFont
-import asyncio
+from aiohttp import ClientSession
 from pathlib import Path
 from .download import get_avatar_by_user_id_and_save
 from .send_image_tool import convert_img
@@ -25,7 +32,28 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
     based_w = 1100
     based_h = 2250
     # 获取背景图
-    img = Image.open(TEXT_PATH / 'back.png').resize((based_w, based_h)).convert("RGBA")
+    try:
+        img = Image.open(BytesIO(await get_anime_pic())).convert("RGBA")
+        # 居中裁剪背景
+        img_w, img_h = img.size
+        scale = based_w / img_w
+        scaled_h = int(img_h * scale)
+        if scaled_h < based_h:  # 缩放后图片不够高（横屏图）
+            # 重算缩放比
+            scale = based_h / img_h
+            img_w = int(img_w * scale)
+            crop_l = round((img_w / 2) - (based_w / 2))
+            img = img.resize((img_w, based_h)).crop((crop_l, 0, crop_l + based_w, based_h))
+        else:
+            img_h = scaled_h
+            crop_t = round((img_h / 2) - (based_h / 2))
+            img = img.resize((based_w, img_h)).crop((0, crop_t, based_w, crop_t + based_h))
+        img.resize((based_w, based_h), Image.ANTIALIAS)
+        # 贴一层黑色遮罩
+        img.paste(i := Image.new("RGBA", (based_w, based_h), (0, 0, 0, 168)), mask=i)
+    except:
+        logger.info("下载随机背景图失败，使用默认背景图")
+        img = Image.open(TEXT_PATH / 'back.png').resize((based_w, based_h)).convert("RGBA")
     # 获取用户头像圆框
     user_status = Image.open(TEXT_PATH / 'user_state.png').resize((450, 450)).convert("RGBA")
     temp = await get_avatar_by_user_id_and_save(user_id)
@@ -93,7 +121,7 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
     for key, value in DETAIL_sectinfo.items():
         tasks3.append(_draw_sect_info_line(img, key, value, DETAIL_sectinfo))
     await asyncio.gather(*tasks3)
-
+    img.convert("RGB")
     res = await convert_img(img)
     return res
 
@@ -101,7 +129,7 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
 async def _draw_line(img: Image.Image, key, value, DETAIL_MAP):
     line = Image.open(TEXT_PATH / 'line3.png').resize((450, 68))
     line_draw = ImageDraw.Draw(line)
-    word = f"{key}：{value}"
+    word = f"{key}:{value}"
     w, h = await linewh(line, word)
 
     line_draw.text((70, h), word, first_color, font_36, 'lm')
@@ -111,7 +139,7 @@ async def _draw_line(img: Image.Image, key, value, DETAIL_MAP):
 async def _draw_base_info_line(img: Image.Image, key, value, DETAIL_MAP):
     line = Image.open(TEXT_PATH / 'line4.png').resize((900, 100))
     line_draw = ImageDraw.Draw(line)
-    word = f"{key}：{value}"
+    word = f"{key}:{value}"
     w, h = await linewh(line, word)
 
     line_draw.text((100, h), word, first_color, font_36, 'lm')
@@ -121,7 +149,7 @@ async def _draw_base_info_line(img: Image.Image, key, value, DETAIL_MAP):
 async def _draw_sect_info_line(img: Image.Image, key, value, DETAIL_MAP):
     line = Image.open(TEXT_PATH / 'line4.png').resize((900, 100))
     line_draw = ImageDraw.Draw(line)
-    word = f"{key}：{value}"
+    word = f"{key}:{value}"
     w, h = await linewh(line, word)
 
     line_draw.text((100, h), word, first_color, font_36, 'lm')
@@ -143,3 +171,14 @@ async def linewh(line, word):
     gs_font_36 = font_origin(36)
     w, h = gs_font_36.getsize(word)
     return (lw - w) / 2, lh / 2
+
+async def async_request(url, *args, is_text=False, **kwargs):
+    async with ClientSession() as c:
+        async with c.get(url, *args, **kwargs) as r:
+            return (await r.text()) if is_text else (await r.read())
+
+async def get_anime_pic():
+    r: str = await async_request(
+        "https://api.gmit.vip/Api/DmImg?format=json", is_text=True
+    )
+    return await async_request(json.loads(r)["data"]["url"])

@@ -93,7 +93,10 @@ class XiuConfig:
         self.put_bot = []  # 接收消息qq,主qq，框架将只处理此qq的消息，
         self.main_bo = []  # 负责发送消息的qq
         self.shield_group = []  # 屏蔽的群聊
-        self.layout_bot_dict = {}  # QQ所负责的群聊 #{群 ：bot}   其中 bot类型 []或str }
+        self.layout_bot_dict = {
+
+        }  
+        # QQ所负责的群聊 #{群 ：bot}   其中 bot类型 []或str }
         self.sect_min_level = "铭纹境圆满"
         self.sect_create_cost = 5000000
         self.closing_exp_upper_limit = 1.5  # 闭关获取修为上限（例如：1.5 下个境界的修为数*1.5）
@@ -105,6 +108,7 @@ class XiuConfig:
         self.sign_in_xiuwei_lower_limit = 1000  # 每日签到修为下限
         self.sign_in_xiuwei_upper_limit = 20000  # 每日签到修为上限
         self.tou = 1000000  # 偷灵石惩罚
+        self.tou_cd = 600  # 偷灵石cd/秒
         self.tou_lower_limit = 0.01  # 偷灵石下限(百分比)
         self.tou_upper_limit = 0.2  # 偷灵石上限(百分比)
         self.remake = 100000  # 重入仙途的消费
@@ -126,7 +130,7 @@ class JsonConfig:
         """
         说明：设置修仙开启或关闭
         参数：
-            key: 群聊 1 为开启， 2为关闭，默认关闭
+            key: 群聊 1 为开启， 2为关闭,默认关闭
         """
         json_data = self.read_data()
         if key == 1:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 from nonebot.rule import Rule
-from nonebot import get_bots
+from nonebot import get_bots, get_bot
 from enum import IntEnum, auto
 from collections import defaultdict
 from asyncio import get_running_loop
@@ -99,13 +99,13 @@ def Cooldown(
                     event.get_user_id() in bot.config.superusers
             ):
 
-                await matcher.finish(message=f"本群已关闭修仙模组，请联系管理员开启！", at_sender=True)
+                await matcher.finish(message=f"本群已关闭修仙模组,请联系管理员开启,开启命令为【启用修仙功能】!", at_sender=True)
             else:
-                pass
+                await matcher.finish()
         else:
             pass
         if running[key] <= 0:
-            if cd_time >= 1:
+            if cd_time >= 1.5:
                 time = int(cd_time - (loop.time() - time_sy[key]))
                 if time <= 1:
                     time = 1
@@ -170,6 +170,21 @@ async def assign_bot(bot: Bot, event: GroupMessageEvent):  # 按字典分配对�
             bot = get_bots()[random.choice(bot_id)]
         else:
             bot = bot
-    except KeyError:
+    except:
         bot = bot
     return bot, group_id
+
+
+async def assign_bot_group(group_id):  # 只导入群号，按字典分配对应qq发送消息
+    group_id = str(group_id)
+    try:
+        bot_id = layout_bot_dict[group_id]
+        if type(bot_id) is str:
+            bot = get_bots()[bot_id]
+        elif type(bot_id) is list:
+            bot = get_bots()[random.choice(bot_id)]
+        else:
+            bot = get_bots()[put_bot[0]]
+    except:
+        bot = get_bot()
+    return bot

@@ -68,8 +68,8 @@ STORY = {
         "掉血事件": {
             "type_rate": 100,
             "desc": [
-                "秘境内竟然散布着浓烈的毒气，道友贸然闯入！{}！",
-                "秘境内竟然藏着一群未知势力，道友被打劫了！{}！"
+                "秘境内竟然散布着浓烈的毒气，道友贸然闯入！{}!",
+                "秘境内竟然藏着一群未知势力，道友被打劫了！{}!"
             ],
             "cost": {
                 "exp": {
@@ -97,24 +97,22 @@ async def get_boss_battle_info(user_info, rift_rank, bot_id):
     """获取Boss战事件的内容"""
     boss_data = STORY['战斗']['Boss战斗']["Boss数据"]
     player = {"user_id": None, "道号": None, "气血": None, "攻击": None, "真元": None, '会心': None, '防御': 0}
-    user_info = sql_message.get_user_real_info(user_info.user_id)
+    userinfo = sql_message.get_user_real_info(user_info.user_id)
     user1_weapon_data = UserBuffDate(user_info.user_id).get_user_weapon_data()
 
-    impart_data = xiuxian_impart.get_user_message(user_info.user_id)
-    impart_know_per = impart_data.impart_know_per if impart_data.impart_know_per is not None else 0
     if user1_weapon_data is not None:
-        player['会心'] = int((user1_weapon_data['crit_buff'] + impart_know_per) * 100)
+        player['会心'] = int(user1_weapon_data['crit_buff'] * 100)
     else:
-        player['会心'] = int(1 + impart_know_per * 100)
+        player['会心'] = 1
 
-    player['user_id'] = user_info.user_id
-    player['道号'] = user_info.user_name
-    player['气血'] = user_info.hp
-    player['攻击'] = user_info.atk
-    player['真元'] = user_info.mp
-    player['exp'] = user_info.exp
+    player['user_id'] = userinfo.user_id
+    player['道号'] = userinfo.user_name
+    player['气血'] = userinfo.hp
+    player['攻击'] = userinfo.atk
+    player['真元'] = userinfo.mp
+    player['exp'] = userinfo.exp
 
-    base_exp = user_info.exp
+    base_exp = userinfo.exp
     boss_info = {
         "name": random.choice(boss_data["name"]),
         "气血": int(base_exp * random.choice(boss_data["hp"])),
@@ -174,14 +172,14 @@ def get_treasure_info(user_info, rift_rank):
     msg = None
     if rift_type == "法器":
         weapon_info = get_weapon(user_info, rift_rank)
-        temp_msg = f"竟然获得了{weapon_info[1]['level']}：{weapon_info[1]['name']}！"
+        temp_msg = f"竟然获得了{weapon_info[1]['level']}:{weapon_info[1]['name']}!"
         msg = random.choice(TREASUREMSG).format(temp_msg)
         sql_message.send_back(user_info.user_id, weapon_info[0], weapon_info[1]['name'], weapon_info[1]['type'], 1)
         # 背包sql
 
     elif rift_type == "防具":  # todo
         armor_info = get_armor(user_info, rift_rank)
-        temp_msg = f"竟然获得了{armor_info[1]['level']}防具：{armor_info[1]['name']}！"
+        temp_msg = f"竟然获得了{armor_info[1]['level']}防具：{armor_info[1]['name']}!"
         msg = random.choice(TREASUREMSG).format(temp_msg)
         sql_message.send_back(user_info.user_id, armor_info[0], armor_info[1]['name'], armor_info[1]['type'], 1)
         # 背包sql
@@ -191,7 +189,7 @@ def get_treasure_info(user_info, rift_rank):
         if give_main_info[0]:  # 获得了
             main_buff_id = give_main_info[1]
             main_buff = items.get_data_by_item_id(main_buff_id)
-            temp_msg = f"竟然获得了{main_buff['level']}功法：{main_buff['name']}！"
+            temp_msg = f"竟然获得了{main_buff['level']}功法：{main_buff['name']}!"
             msg = random.choice(TREASUREMSG).format(temp_msg)
             sql_message.send_back(user_info.user_id, main_buff_id, main_buff['name'], main_buff['type'], 1)
         else:
@@ -202,7 +200,7 @@ def get_treasure_info(user_info, rift_rank):
         if give_sec_info[0]:  # 获得了
             sec_buff_id = give_sec_info[1]
             sec_buff = items.get_data_by_item_id(sec_buff_id)
-            temp_msg = f"竟然获得了{sec_buff['level']}功法：{sec_buff['name']}！"
+            temp_msg = f"竟然获得了{sec_buff['level']}功法：{sec_buff['name']}!"
             msg = random.choice(TREASUREMSG).format(temp_msg)
             sql_message.send_back(user_info.user_id, sec_buff_id, sec_buff['name'], sec_buff['type'], 1)
             # 背包sql
@@ -221,7 +219,7 @@ def get_treasure_info(user_info, rift_rank):
 
 
 def get_dict_type_rate(data_dict):
-    """根据字典内概率，返回字典key"""
+    """根据字典内概率,返回字典key"""
     temp_dict = {}
     for i, v in data_dict.items():
         try:
@@ -270,8 +268,8 @@ def get_id_by_rank(dict_data, user_level, rift_rank=0):
 def get_weapon(user_info, rift_rank=0):
     """
     随机获取一个法器
-    :param user_info：用户信息类
-    :param rift_rank：秘境等级
+    :param user_info:用户信息类
+    :param rift_rank:秘境等级
     :return 法器ID, 法器信息json
     """
     weapon_data = items.get_data_by_item_type(['法器'])
@@ -283,8 +281,8 @@ def get_weapon(user_info, rift_rank=0):
 def get_armor(user_info, rift_rank=0):
     """
     随机获取一个防具
-    :param user_info：用户信息类
-    :param rift_rank：秘境等级
+    :param user_info:用户信息类
+    :param rift_rank:秘境等级
     :return 防具ID, 防具信息json
     """
     armor_data = items.get_data_by_item_type(['防具'])

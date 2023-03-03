@@ -43,12 +43,12 @@ class XIUXIAN_IMPART_BUFF:
             else:
                 self.database_path /= "xiuxian_impart.db"
                 self.conn = sqlite3.connect(self.database_path)
-            logger.info(f"xiuxian_impart数据库已连接！")
+            logger.info(f"xiuxian_impart数据库已连接!")
             self._check_data()
 
     def close(self):
         self.conn.close()
-        logger.info(f"xiuxian_impart数据库关闭！")
+        logger.info(f"xiuxian_impart数据库关闭!")
 
     def _create_file(self) -> None:
         """创建数据库文件"""
@@ -96,7 +96,7 @@ class XIUXIAN_IMPART_BUFF:
             except sqlite3.OperationalError:
                 sql = f"ALTER TABLE xiuxian_impart ADD COLUMN {s} integer DEFAULT 0;"
                 print(sql)
-                logger.info(f"xiuxian_impart数据库核对成功！")
+                logger.info(f"xiuxian_impart数据库核对成功!")
                 c.execute(sql)
 
         self.conn.commit()

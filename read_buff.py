@@ -88,8 +88,8 @@ class UserBuffDate:
 def get_weapon_info_msg(weapon_id, weapon_info=None):
     """
     获取一个法器(武器)信息msg
-    :param weapon_id：法器(武器)ID
-    :param weapon_info：法器(武器)信息json，可不传
+    :param weapon_id:法器(武器)ID
+    :param weapon_info:法器(武器)信息json,可不传
     :return 法器(武器)信息msg
     """
     msg = ''
@@ -106,8 +106,8 @@ def get_weapon_info_msg(weapon_id, weapon_info=None):
 def get_armor_info_msg(armor_id, armor_info=None):
     """
     获取一个法宝(防具)信息msg
-    :param armor_id：法宝(防具)ID
-    :param armor_info：法宝(防具)信息json，可不传
+    :param armor_id:法宝(防具)ID
+    :param armor_info;法宝(防具)信息json,可不传
     :return 法宝(防具)信息msg
     """
     msg = ''
@@ -126,7 +126,7 @@ def get_main_info_msg(id):
     mpmsg = f"提升{round(mainbuff['mpbuff'] * 100, 0)}%真元" if mainbuff['mpbuff'] != 0 else ''
     atkmsg = f"提升{round(mainbuff['atkbuff'] * 100, 0)}%攻击力" if mainbuff['atkbuff'] != 0 else ''
     ratemsg = f"提升{round(mainbuff['ratebuff'] * 100, 0)}%修炼速度" if mainbuff['ratebuff'] != 0 else ''
-    msg = f"{mainbuff['name']}：{hpmsg},{mpmsg},{atkmsg},{ratemsg}。"
+    msg = f"{mainbuff['name']}:{hpmsg},{mpmsg},{atkmsg},{ratemsg}。"
     return mainbuff, msg
 
 

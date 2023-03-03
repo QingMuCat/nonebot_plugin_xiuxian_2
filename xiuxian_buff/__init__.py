@@ -18,13 +18,14 @@ from ..read_buff import UserBuffDate, get_main_info_msg, get_user_buff, get_sec_
 from nonebot.params import CommandArg
 from ..player_fight import Player_fight
 from ..utils import (
-    send_forward_msg_list,
+    send_forward_msg_list, number_to,
     check_user_type, get_msg_pic, CommandObjectID
 )
 from ..read_buff import get_player_info, save_player_info
 from ..lay_out import assign_bot, Cooldown
 from .two_exp_cd import two_exp_cd
 from ..xn_xiuxian_impart import XIUXIAN_IMPART_BUFF
+
 
 cache_help = {}
 sql_message = XiuxianDateManage()  # sql类
@@ -51,14 +52,14 @@ my_exp_num = on_fullmatch("我的双修次数", priority=9, permission=GROUP, bl
 __buff_help__ = f"""
 功法帮助信息:
 指令：
-1、我的功法：查看自身功法信息
-2、切磋，at对应人员，不会消耗气血
-3、洞天福地购买：购买洞天福地
-4、洞天福地查看：查看自己的洞天福地
+1、我的功法:查看自身功法信息
+2、切磋:at对应人员,不会消耗气血
+3、洞天福地购买:购买洞天福地
+4、洞天福地查看:查看自己的洞天福地
 5、洞天福地改名+名字：修改自己洞天福地的名字
-6、灵田开垦：提升灵田的等级，提高灵田结算的药材数量
-7、抑制黑暗动乱：清除修为浮点数
-8、我的双修次数：查看剩余双修次数
+6、灵田开垦:提升灵田的等级,提高灵田结算的药材数量
+7、抑制黑暗动乱:清除修为浮点数
+8、我的双修次数:查看剩余双修次数
 """.strip()
 
 
@@ -152,7 +153,7 @@ async def blessed_spot_info_(bot: Bot, event: GroupMessageEvent):
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await blessed_spot_info.finish()
-    msg = f'\n道友的洞天福地：\n'
+    msg = f'\n道友的洞天福地:\n'
     user_buff_data = UserBuffDate(user_id).BuffInfo
     if user_info.blessed_spot_name == 0:
         blessed_spot_name = "尚未命名"
@@ -217,7 +218,7 @@ async def ling_tian_up_(bot: Bot, event: GroupMessageEvent):
         if int(user_info.stone) < cost:
             msg = f"本次开垦需要灵石：{cost}，道友的灵石不足！"
         else:
-            msg = f"道友成功消耗灵石：{cost}，灵田数量+1，目前数量：{now_num + 1}"
+            msg = f"道友成功消耗灵石：{cost}，灵田数量+1,目前数量:{now_num + 1}"
             mix_elixir_info['灵田数量'] = now_num + 1
             save_player_info(user_id, mix_elixir_info, 'mix_elixir_info')
             sql_message.update_ls(user_id, cost, 2)
@@ -261,7 +262,7 @@ async def blessed_spot_rename_(bot: Bot, event: GroupMessageEvent, args: Message
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await blessed_spot_rename.finish()
     if len(arg) > 9:
-        msg = f"洞天福地的名字不可大于9位，请重新命名"
+        msg = f"洞天福地的名字不可大于9位,请重新命名"
     else:
         msg = f"道友的洞天福地成功改名为：{arg}"
         sql_message.update_user_blessed_spot_name(user_id, arg)
@@ -307,22 +308,18 @@ async def qc_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
                    "攻击": None, "真元": None, '会心': None, '防御': 0, 'exp': 0}
         user1 = sql_message.get_user_real_info(user_id)
 
-        impart_data_1 = xiuxian_impart.get_user_message(user_id)
-        impart_know_per_1 = impart_data_1.impart_know_per if impart_data_1.impart_know_per is not None else 0
         user1_weapon_data = UserBuffDate(user_id).get_user_weapon_data()
         if user1_weapon_data is not None:
-            player1['会心'] = int((user1_weapon_data['crit_buff'] + impart_know_per_1) * 100)
+            player1['会心'] = int(user1_weapon_data['crit_buff'] * 100)
         else:
-            player1['会心'] = int(1 + impart_know_per_1)
+            player1['会心'] = 1
 
         user2 = sql_message.get_user_real_info(give_qq)
-        impart_data_2 = xiuxian_impart.get_user_message(user2.user_id)
-        impart_know_per_2 = impart_data_2.impart_know_per if impart_data_2.impart_know_per is not None else 0
         user2_weapon_data = UserBuffDate(user2.user_id).get_user_weapon_data()
         if user2_weapon_data is not None:
-            player2['会心'] = int((user2_weapon_data['crit_buff'] + impart_know_per_2) * 100)
+            player2['会心'] = int(user2_weapon_data['crit_buff'] * 100)
         else:
-            player2['会心'] = int(1 + impart_know_per_2)
+            player2['会心'] = 1
         player1['user_id'] = user1.user_id
         player1['道号'] = user1.user_name
         player1['气血'] = user1.hp
@@ -487,7 +484,7 @@ async def two_exp_(bot: Bot, event: GroupMessageEvent, args: Message = CommandAr
                 sql_message.update_levelrate(user_2.user_id, user_2.level_up_rate + 2)
                 two_exp_cd.add_user(user_1.user_id)
                 two_exp_cd.add_user(user_2.user_id)
-                msg += f"离开时双方互相留法宝为对方护道，双方各增加突破概率2%。"
+                msg += f"离开时双方互相留法宝为对方护道,双方各增加突破概率2%。"
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                     await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -716,7 +713,7 @@ async def out_closing_(bot: Bot, event: GroupMessageEvent):
         # 计算传承增益
         impart_data = xiuxian_impart.get_user_message(user_id)
         impart_exp_up = impart_data.impart_exp_up if impart_data is not None else 0
-        exp = exp * (1 + impart_exp_up)
+        exp = int(exp * (1 + impart_exp_up))
         if exp >= user_get_exp_max:
             # 用户获取的修为到达上限
             sql_message.in_closing(user_id, user_type)
@@ -836,15 +833,15 @@ async def mind_state_(bot: Bot, event: GroupMessageEvent):
     boss_atk = impart_data.boss_atk if impart_data is not None else 0
 
     msg = f"""道号：{user_msg.user_name}
-气血：{user_msg.hp}/{int((user_msg.exp / 2) * (1 + main_hp_buff + impart_hp_per))}
-真元：{user_msg.mp}/{int(user_msg.exp * (1 + main_mp_buff + impart_mp_per))}
-攻击：{user_msg.atk}
-攻击修炼：{user_msg.atkpractice}级(提升攻击力{user_msg.atkpractice * 4}%)
-修炼效率：{int(((level_rate * realm_rate) * (1 + main_buff_rate_buff) + int(user_buff_data.BuffInfo.blessed_spot)) * 100)}%
-会心：{crit_buff + int(impart_know_per * 100)}%
-减伤率：{def_buff}%
-boss战增益：{int(boss_atk * 100)}%
-会心伤害增益：{int((1.5 + impart_burst_per) * 100)}%
+气血:{number_to(user_msg.hp)}/{number_to(int((user_msg.exp / 2) * (1 + main_hp_buff + impart_hp_per)))}
+真元:{int(user_msg.mp / user_msg.exp) * 100}%
+攻击:{number_to(user_msg.atk)}
+攻击修炼:{user_msg.atkpractice}级(提升攻击力{user_msg.atkpractice * 4}%)
+修炼效率:{int(((level_rate * realm_rate) * (1 + main_buff_rate_buff) + int(user_buff_data.BuffInfo.blessed_spot)) * 100)}%
+会心:{crit_buff + int(impart_know_per * 100)}%
+减伤率:{def_buff}%
+boss战增益:{int(boss_atk * 100)}%
+会心伤害增益:{int((1.5 + impart_burst_per) * 100)}%
 """
     if XiuConfig().img:
         pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -929,7 +926,7 @@ async def my_exp_num_(bot: Bot, event: GroupMessageEvent):
     limt = two_exp_cd.find_user(user_id)
     impart_data = xiuxian_impart.get_user_message(user_id)
     impart_two_exp = impart_data.impart_two_exp if impart_data is not None else 0
-    num = limt - two_exp_limit + impart_two_exp
+    num = (two_exp_limit + impart_two_exp) - limt
     if num <= 0:
         num = 0
     msg = f"道友剩余双修次数{num}次！"

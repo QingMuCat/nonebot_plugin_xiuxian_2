@@ -9,9 +9,10 @@ from ..lay_out import assign_bot, Cooldown
 from ..xiuxian2_handle import XiuxianDateManage, OtherSet
 from ..data_source import jsondata
 from .draw_user_info import draw_user_info_img
-from ..utils import check_user, get_msg_pic
+from ..utils import check_user, get_msg_pic, number_to
 from ..read_buff import UserBuffDate
 from ..xiuxian_config import XiuConfig
+
 
 xiuxian_message = on_command("我的修仙信息", aliases={"我的存档"}, priority=23, permission=GROUP, block=True)
 sql_message = XiuxianDateManage()  # sql类
@@ -30,11 +31,13 @@ async def xiuxian_message_(bot: Bot, event: GroupMessageEvent):
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await xiuxian_message.finish()
     user_id = user_info.user_id
+    user_info = sql_message.get_user_real_info(user_id)
     user_name = user_info.user_name
     if user_name:
         pass
     else:
         user_name = "无名氏(发送改名+道号更新)"
+
     level_rate = sql_message.get_root_rate(user_info.root_type)  # 灵根倍率
     realm_rate = jsondata.level_data()[user_info.level]["spend"]  # 境界倍率
     sect_id = user_info.sect_id
@@ -56,11 +59,7 @@ async def xiuxian_message_(bot: Bot, event: GroupMessageEvent):
         need_exp = sql_message.get_level_power(is_updata_level)
         get_exp = need_exp - user_info.exp
         if get_exp > 0:
-            if get_exp > 10000:
-                get_exp = int(divmod(get_exp, 10000)[0])
-                exp_meg = "还需{}万修为可突破！".format(get_exp)
-            else:
-                exp_meg = "还需{}修为可突破！".format(get_exp)
+            exp_meg = "还需{}修为可突破！".format(number_to(get_exp))
         else:
             exp_meg = "可突破！"
 
@@ -85,12 +84,12 @@ async def xiuxian_message_(bot: Bot, event: GroupMessageEvent):
     DETAIL_MAP = {
         '道号': f'{user_name}',
         '境界': f'{user_info.level}',
-        '修为': f'{user_info.exp}',
+        '修为': f'{number_to(user_info.exp)}',
         '灵石': f'{user_info.stone}',
-        '战力': f'{int(user_info.exp * level_rate * realm_rate)}',
+        '战力': f'{number_to(int(user_info.exp * level_rate * realm_rate))}',
         '灵根': f'{user_info.root}({user_info.root_type}+{int(level_rate * 100)}%)',
         '突破状态': f'{exp_meg}概率：{jsondata.level_rate_data()[user_info.level] + int(user_info.level_up_rate)}%',
-        '攻击力': f'{user_info.atk}，攻修等级{user_info.atkpractice}级',
+        '攻击力': f'{number_to(user_info.atk)}，攻修等级{user_info.atkpractice}级',
         '所在宗门': sectmsg,
         '宗门职位': sectzw,
         '主修功法': main_buff_name,

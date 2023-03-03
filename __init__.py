@@ -80,3 +80,5 @@ async def do_something(bot: Bot, event: GroupMessageEvent):
                 pass
         else:
             raise IgnoredException("非主bot信息,已忽略")
+
+

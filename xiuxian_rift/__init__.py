@@ -13,7 +13,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 from .old_rift_info import old_rift_info
 from .. import DRIVER
-from ..lay_out import assign_bot, put_bot, Cooldown
+from ..lay_out import assign_bot, assign_bot_group, put_bot, Cooldown
 from nonebot.permission import SUPERUSER
 from nonebot.log import logger
 from ..xiuxian2_handle import XiuxianDateManage
@@ -48,12 +48,12 @@ break_rift = on_command("秘境探索终止", aliases={"终止探索秘境"}, pr
 __rift_help__ = f"""
 秘境帮助信息:
 指令：
-1、群秘境开启、关闭：开启本群的秘境生成，管理员权限
-2、生成秘境：生成一个随机秘境，超管权限
-3、探索秘境：探索秘境获取随机奖励
-4、秘境结算、结算秘境：结算秘境奖励
-5、秘境探索终止、终止探索秘境：终止秘境事件
-6、秘境帮助：获取秘境帮助信息
+1、群秘境开启、关闭:开启本群的秘境生成，管理员权限
+2、生成秘境:生成一个随机秘境，超管权限
+3、探索秘境:探索秘境获取随机奖励
+4、秘境结算、结算秘境:结算秘境奖励
+5、秘境探索终止、终止探索秘境:终止秘境事件
+6、秘境帮助:获取秘境帮助信息
 非指令：
 1、每日18点30分生成一个随机等级的秘境
 """.strip()
@@ -77,10 +77,11 @@ async def save_rift_():
 @set_rift.scheduled_job("cron", hour=18, minute=30)
 async def set_rift_():
     global group_rift
-    bot = get_bots()[put_bot[0]]
+    # bot = get_bots()[put_bot[0]]
     if groups:
         group_rift = {}
         for group_id in groups:
+            bot = await assign_bot_group(group_id=group_id)
             rift = Rift()
             rift.name = get_rift_type()
             rift.rank = config['rift'][rift.name]['rank']
@@ -316,16 +317,18 @@ async def complete_rift_(bot: Bot, event: GroupMessageEvent):
                     await send_forward_msg_list(bot, event, result)
                     if XiuConfig().img:
                         pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-                        await complete_rift.finish(MessageSegment.image(pic))
+                        await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
                     else:
-                        await complete_rift.finish(f"@{event.sender.nickname}\n" + msg)
+                        await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+                    await complete_rift.finish()
             elif rift_type == "宝物":
                 msg = get_treasure_info(user_info, rift_rank)
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-                    await complete_rift.finish(MessageSegment.image(pic))
+                    await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
                 else:
-                    await complete_rift.finish(f"@{event.sender.nickname}\n" + msg)
+                    await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+                await complete_rift.finish()
 
 
 # 终止探索秘境

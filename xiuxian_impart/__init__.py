@@ -40,21 +40,21 @@ impart_img = on_command("传承卡图", aliases={"传承卡片"}, priority=50, p
 
 __impart_help__ = f"""
 传承帮助信息:
-指令：
-1、传承抽卡：花费10颗思恋结晶获取一次传承卡片
-2、传承信息：获取传承主要信息
-3、传承背包：获取传承全部信息
-4、加载传承数据：重新从卡片中加载所有传承属性(数据显示有误时可用)
-5、传承卡图：加上卡片名字获取传承卡牌原画
-思恋结晶获取方式：虚神界对决【俄罗斯轮盘修仙版】
-双方共6次机会，6次中必有一次暴毙
+指令:
+1、传承抽卡:花费10颗思恋结晶获取一次传承卡片
+2、传承信息:获取传承主要信息
+3、传承背包:获取传承全部信息
+4、加载传承数据:重新从卡片中加载所有传承属性(数据显示有误时可用)
+5、传承卡图:加上卡片名字获取传承卡牌原画
+思恋结晶获取方式:虚神界对决【俄罗斯轮盘修仙版】
+双方共6次机会,6次中必有一次暴毙
 获胜者将获取10颗思恋结晶并不消耗虚神界对决次数
 失败者将获取5颗思恋结晶并且消耗一次虚神界对决次数
 每天有三次虚神界对决次数
-1、投影虚神界：将自己的分身投影到虚神界，将可被所有地域的道友挑战
-2、虚神界列表：查找虚神界里所有的投影
-3、虚神界对决：输入虚神界人物编号即可与对方对决，不输入编号将会与{NICKNAME}进行对决
-4、虚神界修炼：加入对应的修炼时间，即可在虚神界修炼
+1、投影虚神界:将自己的分身投影到虚神界,将可被所有地域的道友挑战
+2、虚神界列表:查找虚神界里所有的投影
+3、虚神界对决:输入虚神界人物编号即可与对方对决,不输入编号将会与{NICKNAME}进行对决
+4、虚神界修炼:加入对应的修炼时间,即可在虚神界修炼
 """
 
 
@@ -118,7 +118,7 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await impart_draw.finish()
     if impart_data_draw.stone_num < 10:
-        msg = "思恋结晶数量不足10个，无法抽卡！"
+        msg = "思恋结晶数量不足10个,无法抽卡!"
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -145,7 +145,7 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
                 msg += f"抽卡10次结果如下\n"
                 msg += f"检测到传承背包已经存在卡片{reap_img}\n"
                 msg += f"已转化为2880分钟闭关时间\n"
-                msg += f"累计共获得3540分钟闭关时间！"
+                msg += f"累计共获得3540分钟闭关时间!"
 
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
@@ -178,8 +178,8 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
                 await impart_draw.finish()
             else:
                 msg = ""
-                msg += f"抽卡10次结果如下，获得新的传承卡片{reap_img}\n"
-                msg += f"累计共获得660分钟闭关时间！"
+                msg += f"抽卡10次结果如下,获得新的传承卡片{reap_img}\n"
+                msg += f"累计共获得660分钟闭关时间!"
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": msg}})
@@ -213,7 +213,7 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
             list_tp = []
             msg = ""
             msg += f"抽卡10次结果如下!\n"
-            msg += f"累计共获得660分钟闭关时间！"
+            msg += f"累计共获得660分钟闭关时间!"
             list_tp.append(
                 {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                           "content": msg}})
@@ -281,7 +281,7 @@ async def impart_back_(bot: Bot, event: GroupMessageEvent):
 炼丹收获数量提升：{impart_data_draw.impart_mix_per}颗
 灵田收取数量提升：{impart_data_draw.impart_reap_per}颗
 每日双修次数提升：{impart_data_draw.impart_two_exp}次
-boss战攻击提升：{int(impart_data_draw.boss_atk * 100)}%
+boss战攻击提升:{int(impart_data_draw.boss_atk * 100)}%
 """
     list_tp.append(
         {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承背包", "uin": bot.self_id,

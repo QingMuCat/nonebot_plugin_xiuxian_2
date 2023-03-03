@@ -202,7 +202,7 @@ class XiuxianDateManage:
         self.conn.commit()
 
     def get_user_message(self, user_id):
-        """根据USER_ID获取用户信息，不获取功法加成"""
+        """根据USER_ID获取用户信息,不获取功法加成"""
         cur = self.conn.cursor()
         sql = f"select * from user_xiuxian where user_id=?"
         cur.execute(sql, (user_id,))
@@ -213,7 +213,7 @@ class XiuxianDateManage:
             return UserDate(*result)
 
     def get_user_real_info(self, user_id):
-        """根据USER_ID获取用户信息，获取功法加成"""
+        """根据USER_ID获取用户信息,获取功法加成"""
         cur = self.conn.cursor()
         sql = f"select * from user_xiuxian where user_id=?"
         cur.execute(sql, (user_id,))
@@ -276,7 +276,7 @@ class XiuxianDateManage:
             sql2 = f"UPDATE user_xiuxian SET is_sign=1,stone=stone+?,exp=exp+? WHERE user_id=?"
             cur.execute(sql2, (ls, exp, user_id))
             self.conn.commit()
-            return '签到成功，获取{}块灵石,修为增加{}！'.format(ls, exp)
+            return '签到成功，获取{}块灵石,修为增加{}!'.format(ls, exp)
         elif result[0] == 1:
             return '贪心的人是不会有好运的！'
 
@@ -332,7 +332,7 @@ class XiuxianDateManage:
             self.conn.commit()
 
     def update_root(self, user_id, key):
-        """更新灵根  1为混沌，2为融合，3为超，4为龙，5为天"""
+        """更新灵根  1为混沌,2为融合,3为超,4为龙,5为天"""
         cur = self.conn.cursor()
         print(user_id)
         print(key)
@@ -503,7 +503,7 @@ class XiuxianDateManage:
         """
         更新用户操作CD
         :param user_id: qq
-        :param the_type: 0:无状态  1：闭关中  2：历练中
+        :param the_type: 0:无状态  1:闭关中  2:历练中
         :return:
         """
         now_time = None
@@ -609,26 +609,26 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        mess = f"✨位面境界排行榜TOP10✨\n"
-        num = 0
-        for i in result:
-            num += 1
-            mess += f"第{num}位 {i[0]} {i[1]},修为{i[2]}\n"
+        # mess = f"✨位面境界排行榜TOP10✨\n"
+        # num = 0
+        # for i in result:
+        #     num += 1
+        #     mess += f"第{num}位 {i[0]} {i[1]},修为{i[2]}\n"
 
-        return mess
+        return result
 
     def stone_top(self):
         sql = f"SELECT user_name,stone FROM user_xiuxian WHERE user_name is NOT NULL ORDER BY stone DESC LIMIT 10"
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        mess = f"✨位面灵石排行榜TOP10✨\n"
-        num = 0
-        for i in result:
-            num += 1
-            mess += f"第{num}位  {i[0]}  灵石：{i[1]}枚\n"
+        # mess = f"✨位面灵石排行榜TOP10✨\n"
+        # num = 0
+        # for i in result:
+        #     num += 1
+        #     mess += f"第{num}位  {i[0]}  灵石：{i[1]}枚\n"
 
-        return mess
+        return result
 
     def power_top(self):
         """战力排行榜"""
@@ -636,13 +636,13 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        mess = f"✨位面战力排行榜TOP10✨\n"
-        num = 0
-        for i in result:
-            num += 1
-            mess += f"第{num}位  {i[0]}  战力：{i[1]}\n"
+        # mess = f"✨位面战力排行榜TOP10✨\n"
+        # num = 0
+        # for i in result:
+        #     num += 1
+        #     mess += f"第{num}位  {i[0]}  战力：{i[1]}\n"
 
-        return mess
+        return result
 
     def scale_top(self):
         """
@@ -653,14 +653,14 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        mess = f"✨位面宗门建设排行榜TOP10✨\n"
-        num = 0
-        for i in result:
-            num += 1
-            mess += f"第{num}位  {i[1]}  建设度：{i[2]}\n"
-            if num == 10:
-                break
-        return mess, result
+        # mess = f"✨位面宗门建设排行榜TOP10✨\n"
+        # num = 0
+        # for i in result:
+        #     num += 1
+        #     mess += f"第{num}位  {i[1]}  建设度：{i[2]}\n"
+        #     if num == 10:
+        #         break
+        return result
 
     def get_all_scale(self):
         """
@@ -697,7 +697,7 @@ class XiuxianDateManage:
         self.conn.commit()
 
     def update_sect_materials(self, sect_id, sect_materials, key):
-        """更新资材  1为增加，2为减少"""
+        """更新资材  1为增加,2为减少"""
         cur = self.conn.cursor()
 
         if key == 1:
@@ -742,7 +742,7 @@ class XiuxianDateManage:
         更新用户操作CD
         :param sc_time: 任务
         :param user_id: qq
-        :param the_type: 0:无状态  1：闭关中  2：历练中  3：探索秘境中
+        :param the_type: 0:无状态  1:闭关中  2:历练中  3:探索秘境中
         :param the_time: 本次操作的时长
         :return:
         """
@@ -1008,7 +1008,7 @@ class XiuxianDateManage:
         :param goods_name: 物品名称
         :param goods_type: 物品类型
         :param goods_num: 物品数量
-        :param bind_flag: 是否绑定物品，0-非绑定，1-绑定
+        :param bind_flag: 是否绑定物品,0-非绑定,1-绑定
         :return: None
         """
         now_time = datetime.datetime.now()
@@ -1049,8 +1049,8 @@ class XiuxianDateManage:
             return back(*result)
 
     def update_back_equipment(self, sql_str):
-        """更新背包，传入sql"""
-        print(f"执行的sql：{sql_str}")
+        """更新背包,传入sql"""
+        print(f"执行的sql:{sql_str}")
         cur = self.conn.cursor()
         cur.execute(sql_str)
         self.conn.commit()
@@ -1162,7 +1162,7 @@ class OtherSet(XiuConfig):
     def calculated(self, rate: dict) -> str:
         """
         根据概率计算，轮盘型
-        :rate:格式{"数据名"："获取几率"}
+        :rate:格式{"数据名":"获取几率"}
         :return: 数据名
         """
 
@@ -1316,7 +1316,7 @@ items = Items()
 
 
 def final_user_data(user_data):
-    """传入用户当前信息、buff信息，返回最终信息"""
+    """传入用户当前信息、buff信息,返回最终信息"""
     user_data = list(user_data)
     #
     impart_data = xiuxian_impart.get_user_message(user_data[1])

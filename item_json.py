@@ -100,10 +100,10 @@ class Items:
             item_type: List = None
     ):
         """
-        获取随机一个物品ID，可以指定物品类型，物品等级和用户等级相差6级以上会被抛弃
-        :param fanil_rank：用户的最终rank，最终rank由用户rank和rank增幅事件构成
-        :param item_type：type：list，物品类型，可以为空，枚举值：法器、防具、神通、功法、丹药
-        :return 获得的ID列表，type：list
+        获取随机一个物品ID,可以指定物品类型,物品等级和用户等级相差6级以上会被抛弃
+        :param fanil_rank:用户的最终rank,最终rank由用户rank和rank增幅事件构成
+        :param item_type:type:list,物品类型，可以为空，枚举值：法器、防具、神通、功法、丹药
+        :return 获得的ID列表,type:list
         """
         l_id = []
         for k, v in self.items.items():

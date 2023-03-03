@@ -2,7 +2,7 @@ import random
 from .xiuxian2_handle import XiuxianDateManage
 from .read_buff import UserBuffDate
 from .xn_xiuxian_impart import XIUXIAN_IMPART_BUFF
-
+from .xiuxian_config import USERRANK
 xiuxian_impart = XIUXIAN_IMPART_BUFF()
 
 
@@ -498,7 +498,16 @@ async def Boss_fight(player1: dict, boss: dict, type_in=2, bot_id=0):
     player1_turn_cost = 0  # 先设定为初始值 0
     player1_f_js = get_user_def_buff(player1['user_id'])
     player1_js = player1_f_js  # 减伤率
-    boss['减伤'] = 1  # boss减伤率
+    try:
+        if boss["jj"] == "祭道之上":
+            boss["减伤"] = random.randint(40,90)/100 # boss减伤率
+        else:
+            if USERRANK[(boss["jj"]+ '中期')] <=19:
+                boss["减伤"] = random.randint(40,90)/100 # boss减伤率
+            else:
+                boss["减伤"] = 1  # boss减伤率
+    except:
+        boss["减伤"] = 1  # boss减伤率
     user1_skill_sh = 0
 
     user1buffturn = True
@@ -509,6 +518,10 @@ async def Boss_fight(player1: dict, boss: dict, type_in=2, bot_id=0):
     qx = boss['气血']
     boss_now_stone = boss['stone']
     boss_js = boss['减伤']
+    if boss_js <1:
+        boss_js_data = {"type": "node", "data": {"name": f"{boss['name']}",
+                                     "uin": int(bot_id), "content": f"凝聚真气,获得了{int((1-boss_js)*100)}%减伤!"}}
+        play_list.append(boss_js_data)  
     boss['会心'] = 30
 
     while True:
@@ -811,8 +824,8 @@ def calculate_skill_cost(player, hpcost, mpcost):
 
 def get_persistent_skill_msg(username, skillname, sh, turn):
     if sh:
-        return f"{username}的封印技能：{skillname}，剩余回合：{turn}！"
-    return f"{username}的持续性技能：{skillname}，造成{sh}伤害，剩余回合：{turn}！"
+        return f"{username}的封印技能：{skillname}，剩余回合：{turn}!"
+    return f"{username}的持续性技能：{skillname}，造成{sh}伤害，剩余回合：{turn}!"
 
 
 def get_skill_sh_data(player, secbuffdata):
@@ -828,7 +841,7 @@ def get_skill_sh_data(player, secbuffdata):
             skillsh += int(value * turnatk)
 
         if turncost == 0:
-            turnmsg = '！'
+            turnmsg = '!'
         else:
             turnmsg = f"，休息{secbuffdata['turncost']}回合！"
 

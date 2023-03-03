@@ -12,10 +12,10 @@ class workhandle(XiuxianJsonDate):
             get_work_list = []
             for k, v in data.items():
                 if v[3] == 0:
-                    item_msg = '！'
+                    item_msg = '!'
                 else:
                     item_info = Items().get_data_by_item_id(v[3])
-                    item_msg = f"，可能额外获得：{item_info['level']}：{item_info['name']}！"
+                    item_msg = f"，可能额外获得：{item_info['level']}:{item_info['name']}!"
                 get_work_list.append([k, v[0], v[1], v[2], item_msg])
             savef(user_id, json.dumps(data, ensure_ascii=False))
             return get_work_list

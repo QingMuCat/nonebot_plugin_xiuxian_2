@@ -49,13 +49,13 @@ do_work = on_regex(
 __work_help__ = f"""
 悬赏令帮助信息:
 指令：
-1、悬赏令：获取对应实力的悬赏令
-2、悬赏令刷新：刷新当前悬赏令，每日免费{count}次
+1、悬赏令:获取对应实力的悬赏令
+2、悬赏令刷新:刷新当前悬赏令,每日免费{count}次
 实力支持：江湖好手|搬血境|洞天境|化灵境|铭纹境|列阵境|尊者境|神火境|真一境|圣祭境|天神境|虚道境
-3、悬赏令终止：终止当前悬赏令任务
-4、悬赏令结算：结算悬赏奖励
+3、悬赏令终止:终止当前悬赏令任务
+4、悬赏令结算:结算悬赏奖励
 5、悬赏令接取+编号：接取对应的悬赏令
-6、最后的悬赏令：用于接了悬赏令却境界突破导致卡住的道友使用
+6、最后的悬赏令:用于接了悬赏令却境界突破导致卡住的道友使用
 """.strip()
 
 
@@ -74,7 +74,9 @@ async def last_work_(bot: Bot, event: GroupMessageEvent):
     user_level = user_info.level
     is_type, msg = check_user_type(user_id, 2)  # 需要在悬赏令中的用户
     if (is_type and USERRANK[user_info.level] <= 22) or (
-            is_type and user_info.exp >= sql_message.get_level_power("虚道境圆满")):
+        is_type and user_info.exp >= sql_message.get_level_power("虚道境圆满")) or (
+        is_type and int(user_info.exp) >= int(OtherSet().set_closing_type(user_level)) * XiuConfig().closing_exp_upper_limit    
+        ):
         user_cd_message = sql_message.get_user_cd(user_id)
         work_time = datetime.strptime(
             user_cd_message.create_time, "%Y-%m-%d %H:%M:%S.%f"
@@ -107,7 +109,7 @@ async def last_work_(bot: Bot, event: GroupMessageEvent):
             if item_id != 0:
                 item_flag = True
                 item_info = items.get_data_by_item_id(item_id)
-                item_msg = f"{item_info['level']}：{item_info['name']}"
+                item_msg = f"{item_info['level']}:{item_info['name']}"
             if big_suc:  # 大成功
                 sql_message.update_ls(user_id, give_stone * 2, 1)
                 sql_message.do_work(user_id, 0)
@@ -115,9 +117,9 @@ async def last_work_(bot: Bot, event: GroupMessageEvent):
                 # todo 战利品结算sql
                 if item_flag:
                     sql_message.send_back(user_id, item_id, item_info['name'], item_info['type'], 1)
-                    msg += f"，额外获得奖励：{item_msg}！"
+                    msg += f"，额外获得奖励：{item_msg}!"
                 else:
-                    msg += "！"
+                    msg += "!"
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                     await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -132,9 +134,9 @@ async def last_work_(bot: Bot, event: GroupMessageEvent):
                 if s_o_f:  # 普通成功
                     if item_flag:
                         sql_message.send_back(user_id, item_id, item_info['name'], item_info['type'], 1)
-                        msg += f"，额外获得奖励：{item_msg}！"
+                        msg += f"，额外获得奖励：{item_msg}!"
                     else:
-                        msg += "！"
+                        msg += "!"
                     if XiuConfig().img:
                         pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                         await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -143,7 +145,7 @@ async def last_work_(bot: Bot, event: GroupMessageEvent):
                     await last_work.finish()
 
                 else:  # 失败
-                    msg += "！"
+                    msg += "!"
                     if XiuConfig().img:
                         pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                         await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -366,7 +368,7 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                 if item_id != 0:
                     item_flag = True
                     item_info = items.get_data_by_item_id(item_id)
-                    item_msg = f"{item_info['level']}：{item_info['name']}"
+                    item_msg = f"{item_info['level']}:{item_info['name']}"
                 if big_suc:  # 大成功
                     sql_message.update_exp(user_id, give_exp * 2)
                     sql_message.do_work(user_id, 0)
@@ -374,9 +376,9 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                     # todo 战利品结算sql
                     if item_flag:
                         sql_message.send_back(user_id, item_id, item_info['name'], item_info['type'], 1)
-                        msg += f"，额外获得奖励：{item_msg}！"
+                        msg += f"，额外获得奖励：{item_msg}!"
                     else:
-                        msg += "！"
+                        msg += "!"
                     if XiuConfig().img:
                         pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                         await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -391,9 +393,9 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                     if s_o_f:  # 普通成功
                         if item_flag:
                             sql_message.send_back(user_id, item_id, item_info['name'], item_info['type'], 1)
-                            msg += f"，额外获得奖励：{item_msg}！"
+                            msg += f"，额外获得奖励：{item_msg}!"
                         else:
-                            msg += "！"
+                            msg += "!"
                         if XiuConfig().img:
                             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -402,7 +404,7 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                         await do_work.finish()
 
                     else:  # 失败
-                        msg += "！"
+                        msg += "!"
                         if XiuConfig().img:
                             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))

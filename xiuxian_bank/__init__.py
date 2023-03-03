@@ -36,12 +36,12 @@ bank = on_regex(
 __bank_help__ = f"""
 灵庄帮助信息:
 指令：
-1、灵庄：查看灵庄帮助信息
-2、灵庄存灵石：指令后加存入的金额，获取利息
-3、灵庄取灵石：指令后加取出的金额，会先结算利息，再取出灵石
-4、灵庄升级会员：灵庄利息倍率与灵庄会员等级有关，升级会员会提升利息倍率
-5、灵庄信息：查询自己当前的灵庄信息
-6、灵庄结算：结算利息
+1、灵庄:查看灵庄帮助信息
+2、灵庄存灵石:指令后加存入的金额,获取利息
+3、灵庄取灵石:指令后加取出的金额,会先结算利息,再取出灵石
+4、灵庄升级会员:灵庄利息倍率与灵庄会员等级有关,升级会员会提升利息倍率
+5、灵庄信息:查询自己当前的灵庄信息
+6、灵庄结算:结算利息
 """.strip()
 
 
@@ -119,13 +119,13 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
             await bank.finish()
 
         bankinfo, give_stone, timedeff = get_give_stone(bankinfo)
-        user_infonowstone = int(user_info.stone) - num
+        userinfonowstone = int(user_info.stone) - num
         bankinfo['savestone'] += num
         sql_message.update_ls(user_id, num, 2)
         sql_message.update_ls(user_id, give_stone, 1)
         bankinfo['savetime'] = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         savef(user_id, bankinfo)
-        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n道友存入灵石{num}枚，当前所拥有灵石{user_infonowstone + give_stone}枚，灵庄存有灵石{bankinfo['savestone']}枚"
+        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n道友存入灵石{num}枚，当前所拥有灵石{userinfonowstone + give_stone}枚，灵庄存有灵石{bankinfo['savestone']}枚"
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -146,11 +146,11 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
         # 先结算利息
         bankinfo, give_stone, timedeff = get_give_stone(bankinfo)
 
-        user_infonowstone = int(user_info.stone) + num + give_stone
+        userinfonowstone = int(user_info.stone) + num + give_stone
         bankinfo['savestone'] -= num
         sql_message.update_ls(user_id, num + give_stone, 1)
         savef(user_id, bankinfo)
-        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n取出灵石{num}枚，当前所拥有灵石{user_infonowstone}枚，灵庄存有灵石{bankinfo['savestone']}枚!"
+        msg = f"道友本次结息时间为：{timedeff}小时，获得灵石：{give_stone}枚!\n取出灵石{num}枚，当前所拥有灵石{userinfonowstone}枚，灵庄存有灵石{bankinfo['savestone']}枚!"
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -191,15 +191,13 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
         await bank.finish()
 
     elif mode == '信息':  # 查询灵庄信息
-        msg = (
-            f'''道友的灵庄信息：
-            已存：{bankinfo['savestone']}灵石
-            存入时间：{bankinfo['savetime']}
-            灵庄会员等级：{BANKLEVEL[bankinfo['banklevel']]['level']}
-            当前拥有灵石：{user_info.stone}
-            当前等级存储灵石上限：{BANKLEVEL[bankinfo['banklevel']]['savemax']}枚
-            '''
-        )
+        msg = f'''道友的灵庄信息：
+已存：{bankinfo['savestone']}灵石
+存入时间：{bankinfo['savetime']}
+灵庄会员等级：{BANKLEVEL[bankinfo['banklevel']]['level']}
+当前拥有灵石：{user_info.stone}
+当前等级存储灵石上限：{BANKLEVEL[bankinfo['banklevel']]['savemax']}枚
+'''
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -222,11 +220,11 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
 
 
 def get_give_stone(bankinfo):
-    """获取利息：利息=give_stone，结算时间=timedeff"""
+    """获取利息：利息=give_stone,结算时间=timedeff"""
     savetime = bankinfo['savetime']  # str
     nowtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # str
     timedeff = round((datetime.strptime(nowtime, '%Y-%m-%d %H:%M:%S') -
-                    datetime.strptime(savetime, '%Y-%m-%d %H:%M:%S')).total_seconds() / 3600, 2)
+                      datetime.strptime(savetime, '%Y-%m-%d %H:%M:%S')).total_seconds() / 3600, 2)
     give_stone = int(bankinfo['savestone'] * timedeff * BANKLEVEL[bankinfo['banklevel']]['interest'])
     bankinfo['savetime'] = nowtime
 
@@ -248,8 +246,8 @@ def savef(user_id, data):
         os.makedirs(PLAYERSDATA / user_id)
     FILEPATH = PLAYERSDATA / user_id / "bankinfo.json"
     data = json.dumps(data, ensure_ascii=False, indent=3)
-    save_model = "w" if os.path.exists(FILEPATH) else "x"
-    with open(FILEPATH, mode=save_model, encoding="UTF-8") as f:
+    savemode = "w" if os.path.exists(FILEPATH) else "x"
+    with open(FILEPATH, mode=savemode, encoding="UTF-8") as f:
         f.write(data)
         f.close()
     return True

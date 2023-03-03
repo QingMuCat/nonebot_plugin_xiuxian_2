@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import (
 import json
 import math
 import datetime
+import unicodedata
 from nonebot.params import Depends
 from base64 import b64encode
 from io import BytesIO
@@ -135,7 +136,7 @@ async def send_forward_msg_list(
 class Txt2Img:
     """保存帮助信息为图片文件
     插件copy为nonebot-plugin-txt2img
-    git：https://github.com/mobyw/nonebot-plugin-txt2img"""
+    git:https://github.com/mobyw/nonebot-plugin-txt2img"""
 
     def __init__(self, size=30):
         self.font_family = str(jsondata.FONT_FILE)
@@ -155,7 +156,7 @@ class Txt2Img:
             temp_len += wcwidth(ch)
             if ch == '\n':
                 temp_len = 0
-            if temp_len >= max_width:
+            if temp_len > max_width:
                 temp_len = 0
                 result += '\n'
         result = result.rstrip()
@@ -163,6 +164,8 @@ class Txt2Img:
 
     def save(self, title, lrc, boss_name=""):
         """MI Note"""
+        title = unicodedata.normalize('NFKC', title)
+        lrc = unicodedata.normalize('NFKC', lrc)
         border_color = (220, 211, 196)
         text_color = (125, 101, 89)
 
@@ -175,7 +178,6 @@ class Txt2Img:
 
         if title == ' ':
             title = ''
-
         lrc = self.wrap(lrc)
 
         if lrc.find("\n") > -1:
@@ -317,3 +319,25 @@ def CommandObjectID() -> int:
             return event.channel_id
 
     return Depends(_event_id)
+
+
+def number_to(num):
+    '''
+    递归实现，精确为最大单位值 + 小数点后一位
+    '''
+    def strofsize(num, level):
+        if level >= 2:
+            return num, level
+        elif num >= 10000:
+            num /= 10000
+            level += 1
+            return strofsize(num, level)
+        else:
+            return num, level
+    units = ['', '万', '亿']
+    num, level = strofsize(num, 0)
+    if level > len(units):
+        level -= 1
+    return '{}{}'.format(round(num, 1), units[level])
+
+
