@@ -16,20 +16,20 @@ DATABASE = Path() / "data" / "xiuxian"
 
 xiuxian_data = namedtuple("xiuxian_data", ["no", "user_id", "linggen", "level"])
 UserDate = namedtuple("UserDate",
-                    ["id", "user_id", "stone", "root", "root_type", "level", "power", "create_time", "is_sign", "exp",
-                    "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "hp", "mp", "atk",
-                    "atkpractice",
-                    "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
+                      ["id", "user_id", "stone", "root", "root_type", "level", "power", "create_time", "is_sign", "exp",
+                       "user_name", "level_up_cd", "level_up_rate", "sect_id", "sect_position", "hp", "mp", "atk",
+                       "atkpractice",
+                       "sect_task", "sect_contribution", "sect_elixir_get", "blessed_spot_flag", "blessed_spot_name"])
 
 UserCd = namedtuple("UserCd", ["user_id", "type", "create_time", "scheduled_time"])
 SectInfo = namedtuple("SectInfo",
-                    ["sect_id", "sect_name", "sect_owner", "sect_scale", "sect_used_stone", "sect_fairyland",
-                    "sect_materials", "mainbuff", "secbuff", "elixir_room_level"])
+                      ["sect_id", "sect_name", "sect_owner", "sect_scale", "sect_used_stone", "sect_fairyland",
+                       "sect_materials", "mainbuff", "secbuff", "elixir_room_level"])
 BuffInfo = namedtuple("BuffInfo",
-                    ["id", "user_id", "main_buff", "sec_buff", "faqi_buff", "fabao_weapon", "armor_buff", "atk_buff",
-                    "blessed_spot"])
+                      ["id", "user_id", "main_buff", "sec_buff", "faqi_buff", "fabao_weapon", "armor_buff", "atk_buff",
+                       "blessed_spot"])
 back = namedtuple("back", ["user_id", "goods_id", "goods_name", "goods_type", "goods_num", "create_time", "update_time",
-                        "remake", "day_num", "all_num", "action_time", "state", "bind_num"])
+                           "remake", "day_num", "all_num", "action_time", "state", "bind_num"])
 
 num = '578043031'
 
@@ -67,11 +67,11 @@ class XiuxianDateManage:
         """创建数据库文件"""
         c = self.conn.cursor()
         c.execute('''CREATE TABLE User_xiuxian
-                        (NO            INTEGER PRIMARY KEY UNIQUE,
-                        USERID         TEXT     ,
-                        level          INTEGER  ,
-                        root           INTEGER
-                        );''')
+                           (NO            INTEGER PRIMARY KEY UNIQUE,
+                           USERID         TEXT     ,
+                           level          INTEGER  ,
+                           root           INTEGER
+                           );''')
         c.execute('''''')
         c.execute('''''')
         self.conn.commit()
@@ -86,42 +86,42 @@ class XiuxianDateManage:
                     c.execute(f"select count(1) from {i}")
                 except sqlite3.OperationalError:
                     c.execute("""CREATE TABLE "user_xiuxian" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "user_id" INTEGER NOT NULL,
-    "stone" integer DEFAULT 0,
-    "root" TEXT,
-    "root_type" TEXT,
-    "level" TEXT,
-    "power" integer DEFAULT 0,
-    "create_time" integer,
-    "is_sign" integer DEFAULT 0,
-    "exp" integer DEFAULT 0,
-    "user_name" TEXT DEFAULT NULL,
-    "level_up_cd" integer DEFAULT NULL,
-    "level_up_rate" integer DEFAULT 0
+      "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      "user_id" INTEGER NOT NULL,
+      "stone" integer DEFAULT 0,
+      "root" TEXT,
+      "root_type" TEXT,
+      "level" TEXT,
+      "power" integer DEFAULT 0,
+      "create_time" integer,
+      "is_sign" integer DEFAULT 0,
+      "exp" integer DEFAULT 0,
+      "user_name" TEXT DEFAULT NULL,
+      "level_up_cd" integer DEFAULT NULL,
+      "level_up_rate" integer DEFAULT 0
     );""")
             elif i == "user_cd":
                 try:
                     c.execute(f"select count(1) from {i}")
                 except sqlite3.OperationalError:
                     c.execute("""CREATE TABLE "user_cd" (
-    "user_id" INTEGER NOT NULL,
-    "type" integer DEFAULT 0,
-    "create_time" integer DEFAULT NULL,
-    "scheduled_time" integer,
-    PRIMARY KEY ("user_id")
+  "user_id" INTEGER NOT NULL,
+  "type" integer DEFAULT 0,
+  "create_time" integer DEFAULT NULL,
+  "scheduled_time" integer,
+  PRIMARY KEY ("user_id")
 );""")
             elif i == "sects":
                 try:
                     c.execute(f"select count(1) from {i}")
                 except sqlite3.OperationalError:
                     c.execute("""CREATE TABLE "sects" (
-    "sect_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "sect_name" TEXT NOT NULL,
-    "sect_owner" integer,
-    "sect_scale" integer NOT NULL,
-    "sect_used_stone" integer,
-    "sect_fairyland" integer
+  "sect_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "sect_name" TEXT NOT NULL,
+  "sect_owner" integer,
+  "sect_scale" integer NOT NULL,
+  "sect_used_stone" integer,
+  "sect_fairyland" integer
 );""")
             elif i == "back":
                 try:
@@ -129,18 +129,18 @@ class XiuxianDateManage:
                 except sqlite3.OperationalError:
                     pass
                     c.execute("""CREATE TABLE "back" (
-    "user_id" INTEGER NOT NULL,
-    "goods_id" INTEGER NOT NULL,
-    "goods_name" TEXT,
-    "goods_type" TEXT,
-    "goods_num" INTEGER,
-    "create_time" TEXT,
-    "update_time" TEXT,
-    "remake" TEXT,
-    "day_num" INTEGER DEFAULT 0,
-    "all_num" INTEGER DEFAULT 0,
-    "action_time" TEXT,
-    "state" INTEGER DEFAULT 0
+  "user_id" INTEGER NOT NULL,
+  "goods_id" INTEGER NOT NULL,
+  "goods_name" TEXT,
+  "goods_type" TEXT,
+  "goods_num" INTEGER,
+  "create_time" TEXT,
+  "update_time" TEXT,
+  "remake" TEXT,
+  "day_num" INTEGER DEFAULT 0,
+  "all_num" INTEGER DEFAULT 0,
+  "action_time" TEXT,
+  "state" INTEGER DEFAULT 0
 );""")
 
             elif i == "BuffInfo":
@@ -148,12 +148,12 @@ class XiuxianDateManage:
                     c.execute(f"select count(1) from {i}")
                 except sqlite3.OperationalError:
                     c.execute("""CREATE TABLE "BuffInfo" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "user_id" integer DEFAULT 0,
-    "main_buff" integer DEFAULT 0,
-    "sec_buff" integer DEFAULT 0,
-    "faqi_buff" integer DEFAULT 0,
-    "fabao_weapon" integer DEFAULT 0
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user_id" integer DEFAULT 0,
+  "main_buff" integer DEFAULT 0,
+  "sec_buff" integer DEFAULT 0,
+  "faqi_buff" integer DEFAULT 0,
+  "fabao_weapon" integer DEFAULT 0
 );""")
 
         for i in XiuConfig().sql_user_xiuxian:
@@ -609,12 +609,6 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        # mess = f"✨位面境界排行榜TOP10✨\n"
-        # num = 0
-        # for i in result:
-        #     num += 1
-        #     mess += f"第{num}位 {i[0]} {i[1]},修为{i[2]}\n"
-
         return result
 
     def stone_top(self):
@@ -622,12 +616,6 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        # mess = f"✨位面灵石排行榜TOP10✨\n"
-        # num = 0
-        # for i in result:
-        #     num += 1
-        #     mess += f"第{num}位  {i[0]}  灵石：{i[1]}枚\n"
-
         return result
 
     def power_top(self):
@@ -636,12 +624,6 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        # mess = f"✨位面战力排行榜TOP10✨\n"
-        # num = 0
-        # for i in result:
-        #     num += 1
-        #     mess += f"第{num}位  {i[0]}  战力：{i[1]}\n"
-
         return result
 
     def scale_top(self):
@@ -653,13 +635,6 @@ class XiuxianDateManage:
         cur = self.conn.cursor()
         cur.execute(sql, )
         result = cur.fetchall()
-        # mess = f"✨位面宗门建设排行榜TOP10✨\n"
-        # num = 0
-        # for i in result:
-        #     num += 1
-        #     mess += f"第{num}位  {i[1]}  建设度：{i[2]}\n"
-        #     if num == 10:
-        #         break
         return result
 
     def get_all_scale(self):
@@ -1325,9 +1300,9 @@ def final_user_data(user_data):
     else:
         xiuxian_impart._create_user(user_data[1])
     impart_data = xiuxian_impart.get_user_message(user_data[1])
-    impart_hp_per = impart_data.impart_hp_per if impart_data.impart_hp_per is not None else 0
-    impart_mp_per = impart_data.impart_mp_per if impart_data.impart_mp_per is not None else 0
-    impart_atk_per = impart_data.impart_atk_per if impart_data.impart_atk_per is not None else 0
+    impart_hp_per = impart_data.impart_hp_per if impart_data is not None else 0
+    impart_mp_per = impart_data.impart_mp_per if impart_data is not None else 0
+    impart_atk_per = impart_data.impart_atk_per if impart_data is not None else 0
     #
     user_buff_data = UserBuffDate(user_data[1]).BuffInfo
     if int(user_buff_data.faqi_buff) == 0:

@@ -13,10 +13,10 @@ MIXELIXIRCONFIG = {
     },
     "丹药控火": {  # 共2级，多产出2个丹药
         "1": {
-            "level_up_cost": 10000
+            "level_up_cost": 4000
         },
         "2": {
-            "level_up_cost": 15500
+            "level_up_cost": 8888
         }
     }
 }

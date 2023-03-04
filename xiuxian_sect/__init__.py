@@ -17,7 +17,7 @@ from ..data_source import jsondata
 from ..xiuxian_config import XiuConfig, USERRANK
 from .sectconfig import get_config
 from ..utils import (
-    check_user, send_forward_msg,
+    check_user, send_forward_msg, number_to,
     get_msg_pic, send_forward_msg_list, CommandObjectID
 )
 from ..read_buff import BuffJsonDate, get_main_info_msg, UserBuffDate, get_sec_msg
@@ -64,7 +64,7 @@ __sect_help__ = f"""
 4、宗门职位变更:宗主可以改变宗门成员的职位等级【0 1 2 3 4】分别对应【宗主 长老 亲传 内门 外门】外门弟子无法获得宗门修炼资源
 5、宗门捐献:建设宗门，提高宗门建设度，每{config["等级建设度"]}建设度会提高1级攻击修炼等级上限
 6、退出宗门:退出当前宗门
-7、踢出宗门:踢出对应宗门成员,需要输入正确的道号以#结尾或at对方
+7、踢出宗门:踢出对应宗门成员,需要输入正确的qq号或at对方
 8、宗主传位:宗主可以传位宗门成员
 9、升级攻击修炼:升级道友的攻击修炼等级,每级修炼等级提升4%攻击力
 10、宗门列表:查看所有宗门列表
@@ -1214,9 +1214,10 @@ async def create_sect_(bot: Bot, event: GroupMessageEvent, args: Message = Comma
             user_info.stone < XiuConfig().sect_create_cost or
             user_info.sect_id
     ):
-        msg = f"创建宗门要求:(1)创建者境界最低要求为{XiuConfig().sect_min_level};" \
-              f"(2)花费{XiuConfig().sect_create_cost}灵石费用；" \
-              f"(3)创建者当前处于无宗门状态。道友暂未满足所有条件，请逐一核实后，再来寻我。"
+        msg = f"""创建宗门要求:
+(1)创建者境界最低要求为{XiuConfig().sect_min_level}
+(2)花费{XiuConfig().sect_create_cost}灵石费用
+(3)创建者当前处于无宗门状态。道友暂未满足所有条件，请逐一核实后，再来寻我。"""
     else:
         # 切割command获取宗门名称
         sect_name = args.extract_plain_text().strip()
@@ -1264,13 +1265,12 @@ async def sect_kick_out_(bot: Bot, event: GroupMessageEvent, args: Message = Com
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await sect_kick_out.finish()
     give_qq = None  # 艾特的时候存到这里
-    try:
-        for arg in args:
-            if arg.type == "at":
-                give_qq = arg.data.get("qq", "")
-    except:
+    for arg in args:
+        if arg.type == "at":
+            give_qq = arg.data.get("qq", "")
+    if bool(give_qq) is False:
         msg = args.extract_plain_text().strip()
-        give_qq = re.findall("\d+", msg)  # QQ_ID
+        give_qq = re.findall("\d+", msg)[0]  # QQ_ID
     if sql_message.get_user_message(give_qq) is None:
         msg = "修仙界没有此人,请输入正确QQ_ID或正规at!"
         if XiuConfig().img:
@@ -1306,9 +1306,7 @@ async def sect_kick_out_(bot: Bot, event: GroupMessageEvent, args: Message = Com
                         sect_info = sql_message.get_sect_info_by_id(give_user.sect_id)
                         sql_message.update_usr_sect(give_user.user_id, None, None)
                         sql_message.update_user_sect_contribution(give_user.user_id, 0)
-                        msg = f"传{jsondata.sect_config_data()[f'{user_info.sect_position}']['title']}" \
-                              f"{user_info.user_name}法旨，即日起{give_user.user_name}被" \
-                              f"{sect_info.sect_name}除名"
+                        msg = f"传{jsondata.sect_config_data()[f'{user_info.sect_position}']['title']}{user_info.user_name}法旨，即日起{give_user.user_name}被{sect_info.sect_name}除名"
                         if XiuConfig().img:
                             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -1516,9 +1514,7 @@ async def sect_position_update_(bot: Bot, event: GroupMessageEvent, args: Messag
                 if give_user.sect_id == user_info.sect_id and give_user.sect_position > user_info.sect_position:
                     if int(position_num[0]) > user_info.sect_position:
                         sql_message.update_usr_sect(give_user.user_id, give_user.sect_id, int(position_num[0]))
-                        msg = f"传{jsondata.sect_config_data()[f'{user_info.sect_position}']['title']}" \
-                              f"{user_info.user_name}法旨，即日起{give_user.user_name}为" \
-                              f"本宗{jsondata.sect_config_data()[f'{int(position_num[0])}']['title']}"
+                        msg = f"""传{jsondata.sect_config_data()[f'{user_info.sect_position}']['title']}{user_info.user_name}法旨:即日起{give_user.user_name}为本宗{jsondata.sect_config_data()[f'{int(position_num[0])}']['title']}"""
                         if XiuConfig().img:
                             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
                             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -1550,8 +1546,7 @@ async def sect_position_update_(bot: Bot, event: GroupMessageEvent, args: Messag
                     await bot.send_group_msg(group_id=int(send_group_id), message=msg)
                 await sect_position_update.finish()
     else:
-        msg = f"请按照规范进行操作,ex:宗门职位变更2@XXX,将XXX道友(需在自己管理下的宗门)的" \
-              f"变更为{jsondata.sect_config_data().get('2', {'title': '没有找到2品阶'})['title']}"
+        msg = f"""请按照规范进行操作,ex:宗门职位变更2@XXX,将XXX道友(需在自己管理下的宗门)的变更为{jsondata.sect_config_data().get('2', {'title': '没有找到2品阶'})['title']}"""
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
@@ -1631,11 +1626,11 @@ async def my_sect_(bot: Bot, event: GroupMessageEvent):
 宗门编号：{sect_id}
 宗   主：{sql_message.get_user_message(sect_info.sect_owner).user_name}
 道友职位：{jsondata.sect_config_data()[f"{sect_position}"]["title"]}
-宗门建设度：{sect_info.sect_scale}
+宗门建设度：{number_to(sect_info.sect_scale)}
 洞天福地：{sect_info.sect_fairyland if sect_info.sect_fairyland else "暂无"}
 宗门位面排名：{top_idx_list.index(sect_id) + 1}
-宗门拥有资材：{sect_info.sect_materials}
-宗门贡献度：{user_info.sect_contribution}
+宗门拥有资材：{number_to(sect_info.sect_materials)}
+宗门贡献度：{number_to(user_info.sect_contribution)}
 宗门丹房：{elixir_room_name}
 """
         if sect_position == owner_position:

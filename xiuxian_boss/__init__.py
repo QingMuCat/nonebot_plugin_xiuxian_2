@@ -139,8 +139,10 @@ async def send_bot(group_id:str):
                 data['message'] = MessageSegment.image(pic)
             else:
                 data['message'] = MessageSegment.text(msg)
-
-            bot_id = layout_bot_dict[group_id]
+            try:
+                bot_id = layout_bot_dict[group_id]
+            except:
+                bot_id = put_bot[0]
             if type(bot_id) is str:
                 await get_bots()[bot_id].call_api(api, **data)
             elif type(bot_id) is list:

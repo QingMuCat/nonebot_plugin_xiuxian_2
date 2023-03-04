@@ -100,7 +100,7 @@ class Items:
             item_type: List = None
     ):
         """
-        获取随机一个物品ID,可以指定物品类型,物品等级和用户等级相差6级以上会被抛弃
+        获取随机一个物品ID,可以指定物品类型,物品等级和用户等级相差40级以上会被抛弃
         :param fanil_rank:用户的最终rank,最终rank由用户rank和rank增幅事件构成
         :param item_type:type:list,物品类型，可以为空，枚举值：法器、防具、神通、功法、丹药
         :return 获得的ID列表,type:list
@@ -108,12 +108,12 @@ class Items:
         l_id = []
         for k, v in self.items.items():
             if item_type is not None:
-                if v['item_type'] in item_type and int(v['rank']) >= fanil_rank and int(v['rank']) - fanil_rank <= 30:
+                if v['item_type'] in item_type and int(v['rank']) >= fanil_rank and int(v['rank']) - fanil_rank <= 40:
                     l_id.append(k)
                 else:
                     continue
             else:  # 全部随机
-                if int(v['rank']) >= fanil_rank and int(v['rank']) - fanil_rank <= 30:
+                if int(v['rank']) >= fanil_rank and int(v['rank']) - fanil_rank <= 40:
                     l_id.append(k)
                 else:
                     continue

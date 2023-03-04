@@ -834,7 +834,7 @@ async def mind_state_(bot: Bot, event: GroupMessageEvent):
 
     msg = f"""道号：{user_msg.user_name}
 气血:{number_to(user_msg.hp)}/{number_to(int((user_msg.exp / 2) * (1 + main_hp_buff + impart_hp_per)))}
-真元:{int(user_msg.mp / user_msg.exp) * 100}%
+真元:{int((user_msg.mp / user_msg.exp) * 100)}%
 攻击:{number_to(user_msg.atk)}
 攻击修炼:{user_msg.atkpractice}级(提升攻击力{user_msg.atkpractice * 4}%)
 修炼效率:{int(((level_rate * realm_rate) * (1 + main_buff_rate_buff) + int(user_buff_data.BuffInfo.blessed_spot)) * 100)}%

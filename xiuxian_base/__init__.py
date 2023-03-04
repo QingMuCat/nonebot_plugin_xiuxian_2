@@ -186,7 +186,7 @@ async def warring_help_(bot: Bot, event: GroupMessageEvent, session_id: int = Co
         await warring_help.finish()
 
 
-@restart.handle(parameterless=[Cooldown(XiuConfig().remake, at_sender=True)])
+@restart.handle(parameterless=[Cooldown(90, at_sender=True)])
 async def restart_(bot: Bot, event: GroupMessageEvent):
     """刷新灵根信息"""
     bot, send_group_id = await assign_bot(bot=bot, event=event)
@@ -199,6 +199,18 @@ async def restart_(bot: Bot, event: GroupMessageEvent):
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await restart.finish()
     user_id = user_info.user_id
+    if int(user_info.stone) < int(XiuConfig().remake):
+        try:
+            msg = f"灵石不够{XiuConfig().remake}你在想想办法！"
+            if XiuConfig().img:
+                pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+                await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+            else:
+                await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+        except ActionFailed:
+            await restart.finish("修仙界网络堵塞，发送失败!", reply_message=True)
+    else:
+        sql_message.update_ls(user_id, XiuConfig().remake, 2)
     name, root_type = XiuxianJsonDate().linggen_get()
     result = sql_message.ramaker(name, root_type, user_id)
     sql_message.update_power2(user_id)  # 更新战力

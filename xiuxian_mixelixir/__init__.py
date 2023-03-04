@@ -293,7 +293,7 @@ user_ldl_dict = {}
 user_ldl_flag = {}
 
 
-@mix_elixir.handle(parameterless=[Cooldown(at_sender=True)])
+@mix_elixir.handle(parameterless=[Cooldown(cd_time=10, at_sender=True)])
 async def mix_elixir_(bot: Bot, event: GroupMessageEvent):
     global user_ldl_dict, user_ldl_flag
     bot, send_group_id = await assign_bot(bot=bot, event=event)
@@ -347,12 +347,6 @@ async def mix_elixir_(bot: Bot, event: GroupMessageEvent):
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await mix_elixir.finish()
-    msg = "正在匹配背包中的丹方，请等待"
-    if XiuConfig().img:
-        pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-        await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
-    else:
-        await bot.send_group_msg(group_id=int(send_group_id), message=msg)
 
     yaocai_dict = await make_dict(yaocai_dict)
     finall_mix_elixir_msg = await get_mix_elixir_msg(yaocai_dict)

@@ -1,18 +1,58 @@
 #!usr/bin/env python3
 # -*- coding: utf-8 -*-
 import random
+from nonebot.log import logger
 from nonebot.rule import Rule
-from nonebot import get_bots, get_bot
+from nonebot import get_bots, get_bot, require
 from enum import IntEnum, auto
 from collections import defaultdict
 from asyncio import get_running_loop
-from typing import DefaultDict, Dict
+from typing import DefaultDict, Dict, Any
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
 from nonebot.adapters.onebot.v11.event import MessageEvent, GroupMessageEvent
 from nonebot.adapters.onebot.v11 import Bot, MessageSegment
 from .xiuxian_config import XiuConfig, JsonConfig
 from .utils import get_msg_pic
+
+limit_all = require("nonebot_plugin_apscheduler").scheduler
+limit_all_data: Dict[str, Any] = {}
+limit_num = 5
+
+@limit_all.scheduled_job('interval', hours=0, minutes=1)
+def limit_all():
+    # 重置消息字典
+    global limit_all_data
+    limit_all_data  = {}
+    logger.success("已重置消息字典！")
+
+def limit_all_run(user_id: str):
+    global limit_all_data
+    user_id = str(user_id)
+    num = None
+    tip = None
+    try:
+        num = limit_all_data[user_id]["num"]
+        tip = limit_all_data[user_id]["tip"]
+    except:
+        limit_all_data[user_id] = {"num": 0,
+                                   "tip" : False}
+        num = 0
+        tip = False
+    num += 1    
+    if num > limit_num and tip == False:
+        tip = True
+        limit_all_data[user_id]["num"] = num
+        limit_all_data[user_id]["tip"] = tip
+        return True
+    if num > limit_num and tip == True:
+        limit_all_data[user_id]["num"] = num
+        return False
+    else:
+        limit_all_data[user_id]["num"] = num
+        return None
+
+
 
 _chat_flmt_notice = random.choice(
     ["慢...慢一..点❤，还有{}秒，让我在歇会！",
@@ -35,10 +75,10 @@ class CooldownIsolateLevel(IntEnum):
 
 
 def Cooldown(
-        cd_time: float = 0.1,
+        cd_time: float = 0.5,
         at_sender: bool = False,
         isolate_level: CooldownIsolateLevel = CooldownIsolateLevel.USER,
-        parallel: int = 5,
+        parallel: int = 1,
 ) -> None:
     """依赖注入形式的命令冷却
 
@@ -71,6 +111,19 @@ def Cooldown(
         return
 
     async def dependency(bot: Bot, matcher: Matcher, event: MessageEvent):
+        group_id = str(event.group_id)
+        conf_data = JsonConfig().read_data()
+
+        limit_type = limit_all_run(str(event.get_user_id()))
+        if limit_type is True:
+            bot = await assign_bot_group(group_id=group_id)
+            await bot.send_group_msg(group_id=int(group_id), message=f"调用过快!每一分钟只能调用{limit_num}次哦!", at_sender=True)
+            await matcher.finish()
+        elif limit_type is False:
+            await matcher.finish()
+        else:
+            pass
+
         loop = get_running_loop()
 
         if isolate_level is CooldownIsolateLevel.GROUP:
@@ -89,17 +142,15 @@ def Cooldown(
             )
         else:
             key = CooldownIsolateLevel.GLOBAL.name
-
-        group_id = str(event.group_id)
-        conf_data = JsonConfig().read_data()
         if group_id not in conf_data["group"]:
             if (
                     event.sender.role == "admin" or
                     event.sender.role == "owner" or
                     event.get_user_id() in bot.config.superusers
             ):
-
-                await matcher.finish(message=f"本群已关闭修仙模组,请联系管理员开启,开启命令为【启用修仙功能】!", at_sender=True)
+                bot = await assign_bot_group(group_id=group_id)
+                await bot.send_group_msg(group_id=int(group_id), message=f"本群已关闭修仙模组,请联系管理员开启,开启命令为【启用修仙功能】!", at_sender=at_sender)
+                await matcher.finish()
             else:
                 await matcher.finish()
         else:
@@ -111,9 +162,13 @@ def Cooldown(
                     time = 1
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + _chat_flmt_notice.format(time))
-                    await matcher.finish(message=MessageSegment.image(pic))
+                    bot = await assign_bot_group(group_id=group_id)
+                    await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic) ,at_sender=at_sender)
+                    await matcher.finish()
                 else:
-                    await matcher.finish(message=_chat_flmt_notice.format(time), at_sender=at_sender)
+                    bot = await assign_bot_group(group_id=group_id)
+                    await bot.send_group_msg(group_id=int(group_id), message=_chat_flmt_notice.format(time) ,at_sender=at_sender)
+                    await matcher.finish()
             else:
                 await matcher.finish()
         else:
