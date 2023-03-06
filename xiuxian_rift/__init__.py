@@ -18,7 +18,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.log import logger
 from ..xiuxian2_handle import XiuxianDateManage
 from ..utils import (
-    check_user, check_user_type,
+    check_user, check_user_type, get_msg_pic2,
     send_forward_msg_list, get_msg_pic, CommandObjectID
 )
 from .riftconfig import get_config, savef
@@ -90,7 +90,10 @@ async def set_rift_():
             group_rift[group_id] = rift
             msg = f"秘境已刷新，野生的{rift.name}已开启！可探索次数：{rift.count}次，请诸位道友发送 探索秘境 来加入吧！"
             pic = await get_msg_pic(msg)  #
-            await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic))
+            try:
+                await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic))
+            except:
+                print("msg send error")
 
 
 @rift_help.handle(parameterless=[Cooldown(at_sender=True)])
@@ -117,11 +120,8 @@ async def create_rift_(bot: Bot, event: GroupMessageEvent):
     group_id = str(event.group_id)
     if group_id not in groups:
         msg = '本群尚未开启秘境，请联系管理员开启群秘境'
-        if XiuConfig().img:
-            pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-            await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
-        else:
-            await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+        msg = await get_msg_pic2(f"@{event.sender.nickname}\n" + msg)
+        await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await create_rift.finish()
 
     try:

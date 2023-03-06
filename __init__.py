@@ -1,5 +1,6 @@
 #!usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 from .download_xiuxian_data import download_xiuxian_data
 from nonebot.plugin import PluginMetadata
 from nonebot import load_all_plugins
@@ -35,6 +36,9 @@ except:
     logger.info(f"修仙插件没有配置put_bot,如果有多个qq和nb链接,请务必配置put_bot,具体介绍参考【风控帮助】！")
 
 src = ''
+#TODO auto set src(debug ing)
+if "m_nb2\src\plugins" in os.path.abspath(os.path.dirname(__file__)):
+    src = 'src.plugins.'
 load_all_plugins(
     [
         f'{src}nonebot_plugin_xiuxian_2.xiuxian_base',

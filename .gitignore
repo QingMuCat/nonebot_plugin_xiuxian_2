@@ -1,0 +1,4 @@
+**/__pycache__
+#TODO json屏蔽有json更新时候需要去除
+**.json
+

@@ -1,3 +1,5 @@
+from aiocqhttp import MessageSegment
+from .xiuxian_config import XiuConfig
 from .xiuxian2_handle import XiuxianDateManage
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -300,6 +302,23 @@ async def get_msg_pic(msg, title=' ', font_size=52, boss_name=""):
     pic = img.save(title, msg, boss_name)
     return pic
 
+async def get_msg_pic2(msg, title=' ', font_size=52, boss_name=""):
+    """_summary_
+        msg2pic if XiuConfig().img
+    Args:
+        msg (_type_): _description_
+        title (str, optional): _description_. Defaults to ' '.
+        font_size (int, optional): _description_. Defaults to 52.
+        boss_name (str, optional): _description_. Defaults to "".
+
+    Returns:
+        _type_: _description_
+    """
+    if XiuConfig().img:
+        img = Txt2Img(font_size)
+        pic = img.save(title, msg, boss_name)
+        pic = MessageSegment.image(pic)
+        return pic
 
 def CommandObjectID() -> int:
     """
