@@ -97,7 +97,7 @@ async def reset_day_num_scheduler_():
     sql_message.day_num_reset()
     logger.info("每日丹药使用次数重置成功！")
 
-
+#TODO N2N 适配
 # 定时任务生成交友会
 @set_auction_by_scheduler.scheduled_job("cron", hour=auction_time_config['hours'])
 async def set_auction_by_scheduler_():
@@ -710,6 +710,7 @@ async def goods_re_root_(bot: Bot, event: GroupMessageEvent, args: Message = Com
             num = int(args[1])
     except:
             num = 1 
+    #TODO 价格调整
     price = int(6000000 - get_item_msg_rank(goods_id) * 100000) * num
     if price <= 0:
         msg = f"物品：{goods_name}炼金失败，凝聚{price}枚灵石，记得通知晓楠！"
