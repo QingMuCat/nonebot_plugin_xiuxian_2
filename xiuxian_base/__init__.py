@@ -32,6 +32,7 @@ from ..xn_xiuxian_impart import XIUXIAN_IMPART_BUFF, leave_harm_time
 # 定时任务
 scheduler = require("nonebot_plugin_apscheduler").scheduler
 cache_help = {}
+cache_help_fk = {}
 sql_message = XiuxianDateManage()  # sql类
 xiuxian_impart = XIUXIAN_IMPART_BUFF()
 
@@ -54,6 +55,7 @@ restate = on_command("重置状态", permission=SUPERUSER, priority=12, block=Tr
 open_xiuxian = on_command("启用修仙功能", aliases={'禁用修仙功能'}, permission=SUPERUSER, priority=5, block=True)
 user_leveluprate = on_command('我的突破概率', aliases={'突破概率'}, priority=5, permission=GROUP, block=True)
 xiuxian_updata_level = on_fullmatch('修仙适配', priority=15, permission=GROUP, block=True)
+xiuxian_uodata_data = on_fullmatch('更新记录', priority=15, permission=GROUP, block=True)
 
 __xiuxian_notes__ = f"""
 指令：
@@ -79,6 +81,7 @@ __xiuxian_notes__ = f"""
 20、传承系统:发送"传承帮助/虚神界帮助"获取
 21、修仙适配:将1的境界适配到2
 22、启用/禁用修仙功能：当前群开启或关闭修仙功能
+23、更新记录:获取插件最新内容
 """.strip()
 
 __warring_help__ = f"""
@@ -89,12 +92,34 @@ self.shield_group = []  # 屏蔽的群聊
 self.layout_bot_dict = {{}}  # QQ所负责的群聊{{群 :bot}}   其中 bot类型 []或str 
 """.strip()
 
+__xiuxian_updata_data__ = f"""
+## 更新2023.3.1 - 2023.3.6
+1.修复已知bug
+2.支持每个群boss刷新时间定制
+3.支持适配修仙1的境界
+3.宗门可以根据qq号踢人,宗门成员查看获得qq号
+4.支持随机存档背景
+5.支持批量使用丹药
+6.支持批量炼金和炼金绑定丹药
+7.修改了世界积分价格,需要删除boss模块下的config.json生效
+8.增加了修仙全局命令调用锁,默认一分钟五次
+9.增加隐藏职业：器师
+器师：指依托于大宗门下的炼器士，其修为一般很低，但不可小觑，因为一般是大修士的转生与亲信，替大修士完成红尘历练。
+""".strip()
 
 # 重置每日签到
 @scheduler.scheduled_job("cron", hour=0, minute=0)
 async def xiuxian_sing_():
     sql_message.singh_remake()
     logger.info("每日修仙签到重置成功！")
+
+
+@xiuxian_uodata_data.handle(parameterless=[Cooldown(at_sender=True)])
+async def mix_elixir_help_(bot: Bot, event: GroupMessageEvent):
+    bot, send_group_id = await assign_bot(bot=bot, event=event)
+    msg = __xiuxian_updata_data__
+    await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+    await xiuxian_uodata_data.finish()
 
 
 @run_xiuxian.handle(parameterless=[Cooldown(at_sender=True)])
@@ -137,7 +162,6 @@ async def sign_in_(bot: Bot, event: GroupMessageEvent):
         await sign_in.finish()
     user_id = user_info.user_id
     result = sql_message.get_sign(user_id)
-    sql_message.update_power2(user_id)
     msg = result
     try:
         if XiuConfig().img:
@@ -172,14 +196,14 @@ async def help_in_(bot: Bot, event: GroupMessageEvent, session_id: int = Command
 async def warring_help_(bot: Bot, event: GroupMessageEvent, session_id: int = CommandObjectID()):
     """风控帮助"""
     bot, send_group_id = await assign_bot(bot=bot, event=event)
-    if session_id in cache_help:
-        await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(cache_help[session_id]))
+    if session_id in cache_help_fk:
+        await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(cache_help_fk[session_id]))
         await warring_help.finish()
     else:
         msg = __warring_help__
         if XiuConfig().img:
             pic = await get_msg_pic(msg)
-            cache_help[session_id] = pic
+            cache_help_fk[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
@@ -199,28 +223,16 @@ async def restart_(bot: Bot, event: GroupMessageEvent):
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await restart.finish()
     user_id = user_info.user_id
-    if int(user_info.stone) < int(XiuConfig().remake):
-        try:
-            msg = f"灵石不够{XiuConfig().remake}你在想想办法！"
-            if XiuConfig().img:
-                pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-                await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
-            else:
-                await bot.send_group_msg(group_id=int(send_group_id), message=msg)
-        except ActionFailed:
-            await restart.finish("修仙界网络堵塞，发送失败!", reply_message=True)
-    else:
-        sql_message.update_ls(user_id, XiuConfig().remake, 2)
     name, root_type = XiuxianJsonDate().linggen_get()
-    result = sql_message.ramaker(name, root_type, user_id)
+    msg = sql_message.ramaker(name, root_type, user_id)
     sql_message.update_power2(user_id)  # 更新战力
-    msg = result
     try:
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+        await restart.finish()    
     except ActionFailed:
         await restart.finish("修仙界网络堵塞，发送失败!", reply_message=True)
 
@@ -908,6 +920,14 @@ async def rob_stone_(bot: Bot, event: GroupMessageEvent, args: Message = Command
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await give_stone.finish()
+    if user_info.root == "器师":
+        msg = "目前职业无法抢劫！"
+        if XiuConfig().img:
+            pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+            await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+        else:
+            await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+        await rob_stone.finish()
     user_id = user_info.user_id
     give_qq = None  # 艾特的时候存到这里
     for arg in args:
@@ -926,6 +946,14 @@ async def rob_stone_(bot: Bot, event: GroupMessageEvent, args: Message = Command
             await rob_stone.finish()
 
         user_2 = sql_message.get_user_message(give_qq)
+        if user_2.root == "器师":
+            msg = "对方职业无法被抢劫！"
+            if XiuConfig().img:
+                pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+                await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+            else:
+                await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+            await rob_stone.finish()
         if user_2:
             if user_info.hp is None:
                 # 判断用户气血是否为None

@@ -7,7 +7,7 @@ from pathlib import Path
 import random
 import os
 from nonebot.rule import Rule
-from nonebot import get_bots, on_command, on_fullmatch, require
+from nonebot import get_bots, get_bot ,on_command, on_fullmatch, require
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -76,7 +76,7 @@ battle = on_command("讨伐boss", aliases={"讨伐世界boss", "讨伐Boss", "�
 boss_help = on_command("世界boss帮助", aliases={"世界Boss帮助", "世界BOSS帮助"}, priority=5, block=True)
 boss_delete = on_command("天罚boss", aliases={"天罚世界boss", "天罚Boss", "天罚BOSS", "天罚世界Boss", "天罚世界BOSS"}, priority=7,
                          rule=check_rule_bot_boss(), block=True)
-boss_integral_info = on_fullmatch("世界积分查看", priority=10, permission=GROUP, block=True)
+boss_integral_info = on_command("世界积分查看",aliases={"查看世界积分", "查询世界积分", "世界积分查询"} ,priority=10, permission=GROUP, block=True)
 boss_integral_use = on_command("世界积分兑换", priority=6, permission=GROUP, block=True)
 
 boss_time = config["Boss生成时间参数"]
@@ -103,7 +103,7 @@ async def read_boss_():
 
 @DRIVER.on_startup
 async def set_boss_():
-    groups_list = list(config['open'].keys())
+    groups_list = list(groups.keys())
     try:
         for group_id in groups_list:
             scheduler.add_job(
@@ -143,12 +143,15 @@ async def send_bot(group_id:str):
                 bot_id = layout_bot_dict[group_id]
             except:
                 bot_id = put_bot[0]
-            if type(bot_id) is str:
-                await get_bots()[bot_id].call_api(api, **data)
-            elif type(bot_id) is list:
-                await get_bots()[random.choice(bot_id)].call_api(api, **data)
-            else:
-                await get_bots()[put_bot[0]].call_api(api, **data)   
+            try:
+                if type(bot_id) is str:
+                    await get_bots()[bot_id].call_api(api, **data)
+                elif type(bot_id) is list:
+                    await get_bots()[random.choice(bot_id)].call_api(api, **data)
+                else:
+                    await get_bots()[put_bot[0]].call_api(api, **data)
+            except:
+                 await get_bot().call_api(api, **data)   
             logger.info(f"群{group_id}_已生成世界boss")
 
 
@@ -380,15 +383,16 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
         # 新增boss战斗积分点数
         boss_now_hp = bossinfo_new['气血']  # 打之后的血量
         boss_all_hp = bossinfo['总血量']  # 总血量
-        boss_integral = int(((boss_old_hp - boss_now_hp) / boss_all_hp) * 100)
+        boss_integral = int(((boss_old_hp - boss_now_hp) / boss_all_hp) * 30)
         if boss_integral < 5:  # 摸一下不给
             boss_integral = 0
-        if boss_rank - user_rank >= 6:  # 超过太多不给
-            boss_integral = 0
-            more_msg = "道友的境界超过boss太多了,不齿！"
-        if user_rank - boss_rank >= 1:
+        if user_info.root == "器师":
             boss_integral = int(boss_integral * (1 + (user_rank - boss_rank)))
-            more_msg = f"道友低boss境界{user_rank - boss_rank}层，获得{int(100 * (user_rank - boss_rank))}%积分加成！"
+            more_msg = f"道友低boss境界{user_rank - boss_rank}层，获得{int(50 * (user_rank - boss_rank))}%积分加成！"
+        else:
+            if boss_rank - user_rank >= 6:  # 超过太多不给
+                boss_integral = 0
+                more_msg = "道友的境界超过boss太多了,不齿！"
         user_boss_fight_info = get_user_boss_fight_info(user_id)
         user_boss_fight_info['boss_integral'] += boss_integral
         save_user_boss_fight_info(user_id, user_boss_fight_info)
@@ -408,15 +412,16 @@ async def battle_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg
     elif victor == "群友赢了":
         # 新增boss战斗积分点数
         boss_all_hp = bossinfo['总血量']  # 总血量
-        boss_integral = int((boss_old_hp / boss_all_hp) * 100)
+        boss_integral = int((boss_old_hp / boss_all_hp) * 30)
         if boss_integral < 5:  # 摸一下不给
             boss_integral = 0
-        if boss_rank - user_rank >= 6:  # 超过太多不给
-            boss_integral = 0
-            more_msg = "道友的境界超过boss太多了,不齿!"
-        if user_rank - boss_rank >= 1:
+        if user_info.root == "器师":
             boss_integral = int(boss_integral * (1 + (user_rank - boss_rank)))
-            more_msg = f"道友低boss境界{user_rank - boss_rank}层，获得{int(100 * (user_rank - boss_rank))}%积分加成！"
+            more_msg = f"道友低boss境界{user_rank - boss_rank}层，获得{int(50 * (user_rank - boss_rank))}%积分加成！"
+        else:
+            if boss_rank - user_rank >= 6:  # 超过太多不给
+                boss_integral = 0
+                more_msg = "道友的境界超过boss太多了,不齿！"
         group_boss[group_id].remove(group_boss[group_id][boss_num - 1])
         battle_flag[group_id] = False
         XiuxianDateManage().update_ls(user_id, get_stone, 1)

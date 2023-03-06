@@ -309,27 +309,18 @@ async def buy_(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg())
             sql_message.update_ls(user_id, goods_price, 2)
             shop_user_id = shop_data[group_id][str(arg)]['user_id']
             shop_goods_name = shop_data[group_id][str(arg)]['goods_name']
-            shop_user_name = shop_data[group_id][str(arg)]['goods_name']
+            shop_user_name = shop_data[group_id][str(arg)]['user_name']
             shop_goods_id = shop_data[group_id][str(arg)]['goods_id']
             shop_goods_type = shop_data[group_id][str(arg)]['goods_type']
             sql_message.send_back(user_id, shop_goods_id, shop_goods_name, shop_goods_type, 1)
             if shop_user_id == 0:  # 0为系统
                 msg = f"道友成功购买物品{shop_goods_name}，消耗灵石{goods_price}枚！"
             else:
-                msg = f"道友成功购买{shop_user_name}道友寄售的物品{shop_goods_name}，消耗灵石{goods_price}枚！"
                 service_charge = int(goods_price * 0.1)  # 手续费10%
                 give_stone = goods_price - service_charge
-                shop_msg1 = f"道友上架的{shop_goods_name}已被购买，获得灵石{give_stone}枚，坊市收取手续费：{service_charge}枚灵石！"
+                msg = f"道友成功购买{shop_user_name}道友寄售的物品{shop_goods_name}，消耗灵石{goods_price}枚,坊市收取手续费：{service_charge}枚灵石！"
                 sql_message.update_ls(shop_user_id, give_stone, 1)
-                del shop_data[group_id][str(arg)]
-                try:
-                    if XiuConfig().img:
-                        pic = await get_msg_pic(shop_msg1)
-                        await bot.send(event=event, message=MessageSegment.image(pic))
-                    else:
-                        await bot.send(event=event, message=Message(shop_msg1))
-                except ActionFailed:
-                    pass
+                del shop_data[group_id][str(arg)]    
             shop_data[group_id] = reset_dict_num(shop_data[group_id])
             save_shop(shop_data)
             if XiuConfig().img:
@@ -591,6 +582,17 @@ async def shop_added_(bot: Bot, event: GroupMessageEvent, args: Message = Comman
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await shop_added.finish()
+    if goods_type == "聚灵旗" or goods_type == "炼丹炉":
+        if user_info.root == "器师" :
+            pass
+        else:
+            msg = f"道友职业无法上架！"
+            if XiuConfig().img:
+                pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+                await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+            else:
+                await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+            await shop_added.finish() 
 
     group_id = str(event.group_id)
     shop_data = get_shop_data(group_id)
@@ -601,8 +603,7 @@ async def shop_added_(bot: Bot, event: GroupMessageEvent, args: Message = Comman
             num += 1
         else:
             pass
-
-    if num >= 2 :
+    if num >= 5 :
         msg = f"每人只可上架两个物品！"
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)

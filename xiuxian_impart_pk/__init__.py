@@ -338,25 +338,9 @@ async def impart_pk_exp_(bot: Bot, event: GroupMessageEvent, args: Message = Com
     user_buff_data = UserBuffDate(user_id)
     mainbuffdata = user_buff_data.get_user_main_buff_data()
     mainbuffratebuff = mainbuffdata['ratebuff'] if mainbuffdata is not None else 0  # 功法修炼倍率
-    exp = int(
-        (int(impaer_exp_time) * XiuConfig().closing_exp) * (
-                (level_rate * realm_rate * (1 + mainbuffratebuff)) + int(user_buff_data.BuffInfo.blessed_spot))
-        # 洞天福地为加法
-    )  # 本次闭关获取的修为
-
-    max_exp = (
-            int(OtherSet().set_closing_type(user_info.level)) * XiuConfig().closing_exp_upper_limit
-    )  # 获取下个境界需要的修为 * 1.5为闭关上限
-    user_get_exp_max = int(max_exp) - exp
-    if user_get_exp_max < 0:
-        msg = "修炼时长过长导致超出上限，此次修炼失败！"
-        if XiuConfig().img:
-            pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-            await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
-        else:
-            await bot.send_group_msg(group_id=int(send_group_id), message=msg)
-        await impart_pk_exp.finish()
-    else:
+    exp = int((int(impaer_exp_time) * XiuConfig().closing_exp) * ((level_rate * realm_rate * (1 + mainbuffratebuff))))  # 本次闭关获取的修为
+    max_exp = int((int(OtherSet().set_closing_type(user_info.level)) * XiuConfig().closing_exp_upper_limit))  # 获取下个境界需要的修为 * 1.5为闭关上限
+    if 0 < int(user_info.exp + exp) < max_exp:
         xiuxian_impart.use_impart_exp_day(impaer_exp_time, user_id)
         XiuxianDateManage().update_exp(user_id, exp)
         XiuxianDateManage().update_power2(user_id)  # 更新战力
@@ -370,3 +354,13 @@ async def impart_pk_exp_(bot: Bot, event: GroupMessageEvent, args: Message = Com
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
         await impart_pk_exp.finish()
+    else:
+        msg = "修炼时长过长导致超出上限，此次修炼失败！"
+        if XiuConfig().img:
+            pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+            await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+        else:
+            await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+        await impart_pk_exp.finish()
+ 
+        

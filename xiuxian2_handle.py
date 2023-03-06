@@ -272,11 +272,10 @@ class XiuxianDateManage:
             return '修仙界没有你的足迹，输入 我要修仙 加入修仙世界吧！'
         elif result[0] == 0:
             ls = random.randint(XiuConfig().sign_in_lingshi_lower_limit, XiuConfig().sign_in_lingshi_upper_limit)
-            exp = random.randint(XiuConfig().sign_in_xiuwei_lower_limit, XiuConfig().sign_in_xiuwei_upper_limit)
-            sql2 = f"UPDATE user_xiuxian SET is_sign=1,stone=stone+?,exp=exp+? WHERE user_id=?"
-            cur.execute(sql2, (ls, exp, user_id))
+            sql2 = f"UPDATE user_xiuxian SET is_sign=1,stone=stone+? WHERE user_id=?"
+            cur.execute(sql2, (ls,user_id))
             self.conn.commit()
-            return '签到成功，获取{}块灵石,修为增加{}!'.format(ls, exp)
+            return '签到成功，获取{}块灵石!'.format(ls)
         elif result[0] == 1:
             return '贪心的人是不会有好运的！'
 
@@ -334,9 +333,6 @@ class XiuxianDateManage:
     def update_root(self, user_id, key):
         """更新灵根  1为混沌,2为融合,3为超,4为龙,5为天"""
         cur = self.conn.cursor()
-        print(user_id)
-        print(key)
-
         if int(key) == 1:
             sql = f"UPDATE user_xiuxian SET root=?,root_type=? WHERE user_id=?"
             cur.execute(sql, ("全属性灵根", "混沌灵根", user_id))
@@ -1106,7 +1102,7 @@ class OtherSet(XiuConfig):
         list_all = len(self.level) - 1
         now_index = self.level.index(user_level)
         if list_all == now_index:
-            return "道友已是最高境界，无法修炼了！"
+            need_exp = 0.001
         is_updata_level = self.level[now_index + 1]
         need_exp = XiuxianDateManage().get_level_power(is_updata_level)
         return need_exp

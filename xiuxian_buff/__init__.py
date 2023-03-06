@@ -706,8 +706,7 @@ async def out_closing_(bot: Bot, event: GroupMessageEvent):
         mainbuffdata = user_buff_data.get_user_main_buff_data()
         mainbuffratebuff = mainbuffdata['ratebuff'] if mainbuffdata != None else 0  # 功法修炼倍率
         exp = int(
-            (exp_time * XiuConfig().closing_exp) * (
-                    (level_rate * realm_rate * (1 + mainbuffratebuff)) + int(user_buff_data.BuffInfo.blessed_spot))
+            (exp_time * XiuConfig().closing_exp) * ((level_rate * realm_rate * (1 + mainbuffratebuff)))
             # 洞天福地为加法
         )  # 本次闭关获取的修为
         # 计算传承增益
@@ -837,7 +836,7 @@ async def mind_state_(bot: Bot, event: GroupMessageEvent):
 真元:{int((user_msg.mp / user_msg.exp) * 100)}%
 攻击:{number_to(user_msg.atk)}
 攻击修炼:{user_msg.atkpractice}级(提升攻击力{user_msg.atkpractice * 4}%)
-修炼效率:{int(((level_rate * realm_rate) * (1 + main_buff_rate_buff) + int(user_buff_data.BuffInfo.blessed_spot)) * 100)}%
+修炼效率:{int(((level_rate * realm_rate) * (1 + main_buff_rate_buff)) * 100)}%
 会心:{crit_buff + int(impart_know_per * 100)}%
 减伤率:{def_buff}%
 boss战增益:{int(boss_atk * 100)}%

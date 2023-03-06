@@ -360,10 +360,12 @@ def leave_harm_time(user_id):
     realm_rate = jsondata.level_data()[level]["spend"]  # 境界倍率
     user_buff_data = UserBuffDate(user_id)
     mainbuffdata = UserBuffDate(user_id).get_user_main_buff_data()
-    mainbuffratebuff = mainbuffdata['ratebuff'] if mainbuffdata is not None else 0  # 功法修炼倍率
-    time = int(
-        ((user_mes.exp / 10) - user_mes.hp) / ((XiuConfig().closing_exp * level_rate * realm_rate * (
-                1 + mainbuffratebuff) + int(user_buff_data.BuffInfo.blessed_spot)) * hp_speed))
+    mainbuffratebuff = mainbuffdata['ratebuff'] if mainbuffdata != None else 0  # 功法修炼倍率
+    try:
+        time = int(((user_mes.exp / 10) - user_mes.hp) / ((XiuConfig().closing_exp * level_rate * realm_rate * (
+                    1 + mainbuffratebuff)) * hp_speed))
+    except:
+        time = "无穷大"
     return time
 
 

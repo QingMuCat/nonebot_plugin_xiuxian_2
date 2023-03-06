@@ -10,7 +10,7 @@ from asyncio import get_running_loop
 from typing import DefaultDict, Dict, Any
 from nonebot.matcher import Matcher
 from nonebot.params import Depends
-from nonebot.adapters.onebot.v11.event import MessageEvent, GroupMessageEvent
+from nonebot.adapters.onebot.v11.event import MessageEvent, GroupMessageEvent, Message
 from nonebot.adapters.onebot.v11 import Bot, MessageSegment
 from .xiuxian_config import XiuConfig, JsonConfig
 from .utils import get_msg_pic
@@ -52,14 +52,12 @@ def limit_all_run(user_id: str):
         limit_all_data[user_id]["num"] = num
         return None
 
-
-
 _chat_flmt_notice = random.choice(
     ["慢...慢一..点❤，还有{}秒，让我在歇会！",
      "冷静一下，还有{}秒，让我在歇会！",
      "时间还没到，还有{}秒，歇会歇会~~"]
 )
-
+bu_ji_notice = random.choice(["别急！","急也没有!","让我先急!"])
 
 class CooldownIsolateLevel(IntEnum):
     """命令冷却的隔离级别"""
@@ -76,7 +74,7 @@ class CooldownIsolateLevel(IntEnum):
 
 def Cooldown(
         cd_time: float = 0.5,
-        at_sender: bool = False,
+        at_sender: bool = True,
         isolate_level: CooldownIsolateLevel = CooldownIsolateLevel.USER,
         parallel: int = 1,
 ) -> None:
@@ -117,7 +115,7 @@ def Cooldown(
         limit_type = limit_all_run(str(event.get_user_id()))
         if limit_type is True:
             bot = await assign_bot_group(group_id=group_id)
-            await bot.send_group_msg(group_id=int(group_id), message=f"调用过快!每一分钟只能调用{limit_num}次哦!", at_sender=True)
+            await bot.send(event=event, message=bu_ji_notice)
             await matcher.finish()
         elif limit_type is False:
             await matcher.finish()
@@ -149,7 +147,7 @@ def Cooldown(
                     event.get_user_id() in bot.config.superusers
             ):
                 bot = await assign_bot_group(group_id=group_id)
-                await bot.send_group_msg(group_id=int(group_id), message=f"本群已关闭修仙模组,请联系管理员开启,开启命令为【启用修仙功能】!", at_sender=at_sender)
+                await bot.send(event=event, message=MessageSegment.at(event.get_user_id()) + f"本群已关闭修仙模组,请联系管理员开启,开启命令为【启用修仙功能】!")
                 await matcher.finish()
             else:
                 await matcher.finish()
@@ -163,11 +161,11 @@ def Cooldown(
                 if XiuConfig().img:
                     pic = await get_msg_pic(f"@{event.sender.nickname}\n" + _chat_flmt_notice.format(time))
                     bot = await assign_bot_group(group_id=group_id)
-                    await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic) ,at_sender=at_sender)
+                    await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic))
                     await matcher.finish()
                 else:
                     bot = await assign_bot_group(group_id=group_id)
-                    await bot.send_group_msg(group_id=int(group_id), message=_chat_flmt_notice.format(time) ,at_sender=at_sender)
+                    await bot.send_group_msg(group_id=int(group_id), message=_chat_flmt_notice.format(time))
                     await matcher.finish()
             else:
                 await matcher.finish()

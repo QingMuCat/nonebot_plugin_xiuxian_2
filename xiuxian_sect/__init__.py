@@ -1,6 +1,6 @@
 import re
 import random
-from ..xiuxian2_handle import XiuxianDateManage
+from ..xiuxian2_handle import XiuxianDateManage, OtherSet
 from nonebot import on_command, on_fullmatch, require
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import (
@@ -1050,7 +1050,10 @@ async def sect_task_complete_(bot: Bot, event: GroupMessageEvent):
             max_exp = jsondata.sect_config_data()[str(max_exp_limit)]["max_exp"]
             if get_exp >= max_exp:
                 get_exp = max_exp
-
+            max_exp_next = int((int(OtherSet().set_closing_type(user_info.level)) * XiuConfig().closing_exp_upper_limit))  # 获取下个境界需要的修为 * 1.5为闭关上限
+            if int(get_exp + user_info.exp) > max_exp_next:
+                get_exp = 1
+                msg = "检测到修为将要到达上限！"
             sect_stone = int(userstask[user_id]['任务内容']['sect'])
             sql_message.update_user_hp_mp(user_id, user_info.hp - costhp, user_info.mp)
             sql_message.update_exp(user_id, get_exp)
@@ -1058,7 +1061,7 @@ async def sect_task_complete_(bot: Bot, event: GroupMessageEvent):
             sql_message.update_sect_materials(sect_id, sect_stone * 10, 1)
             sql_message.update_user_sect_task(user_id, 1)
             sql_message.update_user_sect_contribution(user_id, user_info.sect_contribution + int(sect_stone))
-            msg = f"道友大战一番，气血减少：{costhp}，获得修为：{get_exp}，所在宗门建设度增加：{sect_stone}，资材增加：{sect_stone * 10}, 宗门贡献度增加：{int(sect_stone)}"
+            msg += f"道友大战一番，气血减少：{costhp}，获得修为：{get_exp}，所在宗门建设度增加：{sect_stone}，资材增加：{sect_stone * 10}, 宗门贡献度增加：{int(sect_stone)}"
             userstask[user_id] = {}
             if XiuConfig().img:
                 pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
@@ -1091,7 +1094,10 @@ async def sect_task_complete_(bot: Bot, event: GroupMessageEvent):
             max_exp = jsondata.sect_config_data()[str(max_exp_limit)]["max_exp"]
             if get_exp >= max_exp:
                 get_exp = max_exp
-
+            max_exp_next = int((int(OtherSet().set_closing_type(user_info.level)) * XiuConfig().closing_exp_upper_limit))  # 获取下个境界需要的修为 * 1.5为闭关上限
+            if int(get_exp + user_info.exp) > max_exp_next:
+                get_exp = 1
+                msg = "检测到修为将要到达上限！"
             sect_stone = int(userstask[user_id]['任务内容']['sect'])
             sql_message.update_ls(user_id, costls, 2)
             sql_message.update_exp(user_id, get_exp)

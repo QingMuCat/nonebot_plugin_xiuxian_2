@@ -50,7 +50,9 @@ def download_xiuxian_data():
             except Exception as e:
                 logger.info(f"修仙配置文件下载失败，原因{e}，一直失败请前往网址手动下载{URL}")
             finally:
-                os.remove(zipPath)
-                logger.info(f"原始压缩包已删除！")
-
+                try:
+                    os.remove(zipPath)
+                    logger.info(f"原始压缩包已删除！")
+                except:
+                    logger.info(f"原始压缩包删除失败，请手动删除，路径{zipPath}!")
     return _main_()

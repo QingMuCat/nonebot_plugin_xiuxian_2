@@ -103,17 +103,15 @@ class XiuConfig:
         self.level_punishment_floor = 1  # 突破失败扣除修为，惩罚下限（百分比）
         self.level_punishment_limit = 10  # 突破失败扣除修为，惩罚上限(百分比)
         self.level_up_probability = 0.3  # 突破失败增加当前境界突破概率的比例
-        self.sign_in_lingshi_lower_limit = 1000  # 每日签到灵石下限
-        self.sign_in_lingshi_upper_limit = 20000  # 每日签到灵石上限
-        self.sign_in_xiuwei_lower_limit = 1000  # 每日签到修为下限
-        self.sign_in_xiuwei_upper_limit = 20000  # 每日签到修为上限
+        self.sign_in_lingshi_lower_limit = 200000  # 每日签到灵石下限
+        self.sign_in_lingshi_upper_limit = 500000  # 每日签到灵石上限
         self.tou = 1000000  # 偷灵石惩罚
         self.tou_cd = 600  # 偷灵石cd/秒
         self.tou_lower_limit = 0.01  # 偷灵石下限(百分比)
         self.tou_upper_limit = 0.2  # 偷灵石上限(百分比)
         self.remake = 100000  # 重入仙途的消费
         self.del_boss_id = []  # 支持非管理员和超管天罚boss
-        self.version = "xiuxian_2.0"
+        self.version = "xiuxian_2.1"
 
 
 class JsonConfig:
