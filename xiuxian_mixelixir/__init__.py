@@ -273,7 +273,7 @@ async def elixir_help_(bot: Bot, event: GroupMessageEvent, session_id: int = Com
     else:
         msg = __elixir_help__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg)
+            pic = await get_msg_pic(msg, scale=False)
             cache_help[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:

@@ -212,7 +212,7 @@ async def back_help_(bot: Bot, event: GroupMessageEvent, session_id: int = Comma
     else:
         msg = __back_help__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg, scale=False)
+            pic = await get_msg_pic(msg)
             cache_help[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:

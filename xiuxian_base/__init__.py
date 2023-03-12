@@ -11,8 +11,6 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     GroupMessageEvent,
     MessageSegment,
-    GROUP_ADMIN,
-    GROUP_OWNER,
     ActionFailed
 )
 from ..read_buff import UserBuffDate
@@ -54,7 +52,7 @@ steal_stone = on_command("偷灵石", aliases={"飞龙探云手"}, priority=4, p
 gm_command = on_command("神秘力量", permission=SUPERUSER, priority=10, block=True)
 rob_stone = on_command("抢劫", aliases={"抢灵石"}, priority=5, permission=GROUP, block=True)
 restate = on_command("重置状态", permission=SUPERUSER, priority=12, block=True)
-open_xiuxian = on_command("启用修仙功能", aliases={'禁用修仙功能'}, permission=GROUP and (SUPERUSER | GROUP_ADMIN | GROUP_OWNER), priority=5, block=True)
+open_xiuxian = on_command("启用修仙功能", aliases={'禁用修仙功能'}, permission=SUPERUSER, priority=5, block=True)
 user_leveluprate = on_command('我的突破概率', aliases={'突破概率'}, priority=5, permission=GROUP, block=True)
 xiuxian_updata_level = on_fullmatch('修仙适配', priority=15, permission=GROUP, block=True)
 xiuxian_uodata_data = on_fullmatch('更新记录', priority=15, permission=GROUP, block=True)
@@ -186,7 +184,7 @@ async def help_in_(bot: Bot, event: GroupMessageEvent, session_id: int = Command
     else:
         msg = __xiuxian_notes__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg)
+            pic = await get_msg_pic(msg, scale=False)
             cache_help[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:
@@ -204,7 +202,7 @@ async def warring_help_(bot: Bot, event: GroupMessageEvent, session_id: int = Co
     else:
         msg = __warring_help__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg)
+            pic = await get_msg_pic(msg, scale=False)
             cache_help_fk[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:

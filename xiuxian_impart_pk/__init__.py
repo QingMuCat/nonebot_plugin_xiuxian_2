@@ -159,7 +159,7 @@ async def impart_pk_now_(bot: Bot, event: GroupMessageEvent, args: Message = Com
         await impart_pk_now.finish()
     num = args.extract_plain_text().strip()
     if impart_pk.find_user_data(user_info.user_id)["pk_num"] <= 0:
-        msg = "道友今日次数耗尽，每天再来吧！"
+        msg = "道友今日次数耗尽，明天再来吧！"
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))

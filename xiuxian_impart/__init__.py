@@ -1,4 +1,3 @@
-import base64
 import os
 from pathlib import Path
 import random
@@ -68,7 +67,7 @@ async def impart_help_(bot: Bot, event: GroupMessageEvent, session_id: int = Com
     else:
         msg = __impart_help__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg)
+            pic = await get_msg_pic(msg, scale=False)
             cache_help[session_id] = pic
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:
@@ -93,19 +92,7 @@ async def impart_img_(bot: Bot, event: GroupMessageEvent, args: Message = Comman
     else:
         await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(img))
         await impart_img.finish()
-#TODO: Move to config
-card_msg2b64 = True
-def img2b64(path):
-    global card_msg2b64
-    if card_msg2b64:
-        with open(path, "rb") as f:
-            base64_data = base64.b64encode(f.read())
-            img_base64 = f"base64://{base64_data.decode()}"
-            img = MessageSegment.image(img_base64)  
-            # img = f"[CQ:image,file=base64://{img_base64}]"
-    else:
-        img = MessageSegment.image(path)
-    return img  
+
 
 @impart_draw.handle(parameterless=[Cooldown(cd_time=3, at_sender=True)])
 async def impart_draw_(bot: Bot, event: GroupMessageEvent):
@@ -163,13 +150,13 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": msg}})
-                img = img2b64(img_path_ya / str(reap_img + ".png"))
+                img = MessageSegment.image(img_path_ya / str(reap_img + ".png"))
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": img}})
                 random.shuffle(time_img)
                 for x in time_img[:9]:
-                    img = img2b64(img_path_ya / str(x + ".png"))
+                    img = MessageSegment.image(img_path_ya / str(x + ".png"))
                     list_tp.append(
                         {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                                   "content": img}})
@@ -196,13 +183,13 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": msg}})
-                img = img2b64(img_path_ya / str(reap_img + ".png"))
+                img = MessageSegment.image(img_path_ya / str(reap_img + ".png"))
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": img}})
                 random.shuffle(time_img)
                 for x in time_img[:9]:
-                    img = img2b64(img_path_ya / str(x + ".png"))
+                    img = MessageSegment.image(img_path_ya / str(x + ".png"))
                     list_tp.append(
                         {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                                   "content": img}})
@@ -232,7 +219,7 @@ async def impart_draw_(bot: Bot, event: GroupMessageEvent):
                                           "content": msg}})
             random.shuffle(time_img)
             for x in time_img:
-                img = img2b64(img_path_ya / str(x + ".png"))
+                img = MessageSegment.image(img_path_ya / str(x + ".png"))
                 list_tp.append(
                     {"type": "node", "data": {"name": f"道友{user_info.user_name}的传承抽卡", "uin": bot.self_id,
                                               "content": img}})
@@ -278,7 +265,7 @@ async def impart_back_(bot: Bot, event: GroupMessageEvent):
     list_tp = []
     img = None
     for x in range(len(img_tp)):
-        img += img2b64(img_path_ya / str(img_tp[x] + ".png"))
+        img += MessageSegment.image(img_path_ya / str(img_tp[x] + ".png"))
     txt_back = f"""--道友{user_info.user_name}的传承物资--
 思恋结晶：{impart_data_draw.stone_num}颗
 抽卡次数：{impart_data_draw.wish}/90次

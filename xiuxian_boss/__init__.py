@@ -139,12 +139,11 @@ async def send_bot(group_id:str):
                 data['message'] = MessageSegment.image(pic)
             else:
                 data['message'] = MessageSegment.text(msg)
-
             try:
-                try:
-                    bot_id = layout_bot_dict[group_id]
-                except:
-                    bot_id = put_bot[0]
+                bot_id = layout_bot_dict[group_id]
+            except:
+                bot_id = put_bot[0]
+            try:
                 if type(bot_id) is str:
                     await get_bots()[bot_id].call_api(api, **data)
                 elif type(bot_id) is list:
@@ -152,10 +151,7 @@ async def send_bot(group_id:str):
                 else:
                     await get_bots()[put_bot[0]].call_api(api, **data)
             except:
-                try:
-                    await get_bot().call_api(api, **data)   
-                except:
-                    logger.info(f"群{group_id}_发送消息失败")
+                 await get_bot().call_api(api, **data)   
             logger.info(f"群{group_id}_已生成世界boss")
 
 

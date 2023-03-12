@@ -1,5 +1,3 @@
-from aiocqhttp import MessageSegment
-from .xiuxian_config import XiuConfig
 from .xiuxian2_handle import XiuxianDateManage
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -7,6 +5,7 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent
 )
 import json
+import random
 import math
 import datetime
 import unicodedata
@@ -134,88 +133,83 @@ async def send_forward_msg_list(
             "send_private_forward_msg", user_id=event.user_id, messages=messages
         )
 
-
 class Txt2Img:
-    """保存帮助信息为图片文件
-    插件copy为nonebot-plugin-txt2img
-    git:https://github.com/mobyw/nonebot-plugin-txt2img"""
+    """文字转图片"""
+    
+    def __init__(self, size=32):
+        self.font = str(jsondata.FONT_FILE)
+        self.font_size = int(size)
+        self.use_font = ImageFont.truetype(font=self.font, size=self.font_size)
+        self.upper_size = 30
+        self.below_size = 30
+        self.left_size = 40
+        self.right_size = 55
+        self.padding = 12
+        self.img_width = 780
+        self.black_clor = (255, 255, 255)
+        self.line_num = 0  
+          
+    def prepare(self, text, scale):
+        text = unicodedata.normalize('NFKC', text)
+        if scale:
+            max_text_len = self.img_width - self.left_size -self.right_size
+        else:
+            max_text_len = 1080 - self.left_size -self.right_size
+        use_font = self.use_font
+        line_num = self.line_num
+        text_len = 0
+        text_new = ""
+        for x in text:
+            text_new += x
+            text_len +=  use_font.getlength(x)
+            if x == '\n':
+                text_len = 0
+            if text_len >= max_text_len:
+                text_len = 0
+                text_new += '\n'
+        text_new = text_new.replace("\n\n","\n")        
+        text_new = text_new.rstrip()
+        line_num = line_num + text_new.count("\n")
+        return text_new, line_num
 
-    def __init__(self, size=30):
-        self.font_family = str(jsondata.FONT_FILE)
-        self.user_font_size = int(size * 1.5)
-        self.lrc_font_size = int(size)
-        self.line_space = int(size)
-        self.lrc_line_space = int(size / 2)
-        self.stroke = 5
-        self.share_img_width = 1080
+    def draw_to(self, text, boss_name="", scale = True):
+        font_size = self.font_size
+        black_clor = self.black_clor
+        upper_size = self.upper_size
+        below_size = self.below_size
+        left_size = self.left_size 
+        padding = self.padding 
+        img_width = self.img_width 
+        use_font = self.use_font
+        text, line_num= self.prepare(text=text, scale = scale)
+        if scale:
+            if line_num < 5:
+                blank_space = int(5 - line_num)
+                line_num =5
+                text += "\n"
+                for k in range(blank_space):
+                    text += "(ᵔ ᵕ ᵔ)\n"
+            else:
+                line_num = line_num
+        else:
+            img_width = 1080
+            line_num = line_num
+        img_hight = int(upper_size + below_size + font_size * (line_num + 1) + padding * line_num )
+        out_img = Image.new(mode="RGB", size=(img_width, img_hight), 
+                            color=black_clor)
+        draw = ImageDraw.Draw(out_img, "RGBA")
 
-    def wrap(self, string):
-        max_width = int(1850 / self.lrc_font_size)
-        temp_len = 0
-        result = ''
-        for ch in string:
-            result += ch
-            temp_len += wcwidth(ch)
-            if ch == '\n':
-                temp_len = 0
-            if temp_len > max_width:
-                temp_len = 0
-                result += '\n'
-        result = result.rstrip()
-        return result
-
-    def save(self, title, lrc, boss_name=""):
-        """MI Note"""
-        title = unicodedata.normalize('NFKC', title)
-        lrc = unicodedata.normalize('NFKC', lrc)
+        # # # #
+        banner_size = 12
         border_color = (220, 211, 196)
-        text_color = (125, 101, 89)
-
-        out_padding = 30
-        padding = 45
-        banner_size = 20
-
-        user_font = ImageFont.truetype(self.font_family, self.user_font_size)
-        lyric_font = ImageFont.truetype(self.font_family, self.lrc_font_size)
-
-        if title == ' ':
-            title = ''
-        lrc = self.wrap(lrc)
-
-        if lrc.find("\n") > -1:
-            lrc_rows = len(lrc.split("\n"))
-        else:
-            lrc_rows = 1
-
-        w = self.share_img_width
-
-        if title:
-            inner_h = (
-                    padding * 2
-                    + self.user_font_size
-                    + self.line_space
-                    + self.lrc_font_size * lrc_rows
-                    + (lrc_rows - 1) * self.lrc_line_space
-            )
-        else:
-            inner_h = (
-                    padding * 2
-                    + self.lrc_font_size * lrc_rows
-                    + (lrc_rows - 1) * self.lrc_line_space
-            )
-
-        h = out_padding * 2 + inner_h
-
-        out_img = Image.new(mode="RGB", size=(w, h), color=(255, 255, 255))
-        draw = ImageDraw.Draw(out_img)
-
+        out_padding = 15
         mi_img = Image.open(jsondata.BACKGROUND_FILE)
         mi_banner = Image.open(jsondata.BANNER_FILE).resize(
             (banner_size, banner_size), resample=3
         )
 
         # add background
-        for x in range(int(math.ceil(h / 100))):
+        for x in range(int(math.ceil(img_hight / 100))):
             out_img.paste(mi_img, (0, x * 100))
 
         # add border
@@ -227,67 +221,48 @@ class Txt2Img:
                 )
 
         draw_rectangle(
-            draw, (out_padding, out_padding, w - out_padding, h - out_padding), 2
+            draw, (out_padding, out_padding, img_width - out_padding, img_hight - out_padding), 2
         )
 
         # add banner
         out_img.paste(mi_banner, (out_padding, out_padding))
         out_img.paste(
             mi_banner.transpose(Image.FLIP_TOP_BOTTOM),
-            (out_padding, h - out_padding - banner_size + 1),
+            (out_padding, img_hight - out_padding - banner_size + 1),
         )
         out_img.paste(
             mi_banner.transpose(Image.FLIP_LEFT_RIGHT),
-            (w - out_padding - banner_size + 1, out_padding),
+            (img_width - out_padding - banner_size + 1, out_padding),
         )
         out_img.paste(
             mi_banner.transpose(Image.FLIP_LEFT_RIGHT).transpose(Image.FLIP_TOP_BOTTOM),
-            (w - out_padding - banner_size + 1, h - out_padding - banner_size + 1),
+            (img_width - out_padding - banner_size + 1, img_hight - out_padding - banner_size + 1),
         )
 
-        if title:
-            user_w, user_h = ImageDraw.Draw(
-                Image.new(mode="RGB", size=(1, 1))
-            ).textsize(title, font=user_font, spacing=self.line_space)
-            draw.text(
-                ((w - user_w) // 2, out_padding + padding),
-                title,
-                font=user_font,
-                fill=text_color,
-                spacing=self.line_space,
-            )
-            draw.text(
-                (
-                    out_padding + padding,
-                    out_padding + padding + self.user_font_size + self.line_space,
-                ),
-                lrc,
-                font=lyric_font,
-                fill=text_color,
-                spacing=self.lrc_line_space,
-            )
-        else:
-            draw.text(
-                (out_padding + padding, out_padding + padding),
-                lrc,
-                font=lyric_font,
-                fill=text_color,
-                spacing=self.lrc_line_space,
-            )
+        # # # # 
+        draw.text(
+            (left_size, upper_size),
+            text,
+            font=use_font,
+            fill=(125, 101, 89),
+            spacing=padding,
+        )
+
         if boss_name:
-            path_ = boss_img_path / f'{boss_name}.png'
-            if os.path.exists(path_):
-                boss_img = Image.open(path_)
-                base_cc = boss_img.height / h
+            boss_img_path = jsondata.BOSS_IMG / f'{boss_name}.png'
+            if os.path.exists(boss_img_path):
+                boss_img = Image.open(boss_img_path)
+                base_cc = boss_img.height / img_hight
                 boss_img_w = int(boss_img.width / base_cc)
                 boss_img_h = int(boss_img.height / base_cc)
                 boss_img = boss_img.resize((int(boss_img_w), int(boss_img_h)), Image.ANTIALIAS)
                 out_img.paste(
                     boss_img,
-                    (int(w - boss_img_w), int(h - boss_img_h)),
+                    (int(img_width - boss_img_w), int(img_hight - boss_img_h)),
                     boss_img
                 )
         return self.img2b64(out_img)
+
 
     def img2b64(self, out_img) -> str:
         """ image to base64 """
@@ -297,28 +272,11 @@ class Txt2Img:
         return base64_str
 
 
-async def get_msg_pic(msg, title=' ', font_size=52, boss_name=""):
-    img = Txt2Img(font_size)
-    pic = img.save(title, msg, boss_name)
+async def get_msg_pic(msg, boss_name="", scale = True):
+    img = Txt2Img()
+    pic = img.draw_to(msg, boss_name, scale)
     return pic
 
-async def get_msg_pic2(msg, title=' ', font_size=52, boss_name=""):
-    """_summary_
-        msg2pic if XiuConfig().img
-    Args:
-        msg (_type_): _description_
-        title (str, optional): _description_. Defaults to ' '.
-        font_size (int, optional): _description_. Defaults to 52.
-        boss_name (str, optional): _description_. Defaults to "".
-
-    Returns:
-        _type_: _description_
-    """
-    if XiuConfig().img:
-        img = Txt2Img(font_size)
-        pic = img.save(title, msg, boss_name)
-        pic = MessageSegment.image(pic)
-        return pic
 
 def CommandObjectID() -> int:
     """

@@ -61,7 +61,7 @@ async def bank_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = Rege
     if mode is None:
         msg = __bank_help__
         if XiuConfig().img:
-            pic = await get_msg_pic(msg)
+            pic = await get_msg_pic(msg, scale=False)
             await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
         else:
             await bot.send_group_msg(group_id=int(send_group_id), message=msg)
