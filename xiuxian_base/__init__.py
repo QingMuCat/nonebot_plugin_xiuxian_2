@@ -42,7 +42,7 @@ sign_in = on_fullmatch("修仙签到", priority=13, permission=GROUP, block=True
 help_in = on_fullmatch("修仙帮助", priority=12, permission=GROUP, block=True)
 warring_help = on_fullmatch("风控帮助", priority=12, permission=GROUP, block=True)
 rank = on_command("排行榜", aliases={"修仙排行榜", "灵石排行榜", "战力排行榜", "境界排行榜", "宗门排行榜"},
-                  priority=7, permission=GROUP, block=True)
+                priority=7, permission=GROUP, block=True)
 remaname = on_command("改名", priority=5, permission=GROUP, block=True)
 level_up = on_fullmatch("突破", priority=6, permission=GROUP, block=True)
 level_up_dr = on_fullmatch("渡厄突破", priority=7, permission=GROUP, block=True)
@@ -105,6 +105,10 @@ __xiuxian_updata_data__ = f"""
 8.增加了修仙全局命令调用锁,默认一分钟五次
 9.增加隐藏职业：器师
 器师：指依托于大宗门下的炼器士，其修为一般很低，但不可小觑，因为一般是大修士的转生与亲信，替大修士完成红尘历练。
+更新类容：## 更新2023.3.11
+1.修改背包容量
+2.坊市支持批量上架和购买
+3.解决手机部分图片需要点开才能看到字的问题
 """.strip()
 
 # 重置每日签到
