@@ -911,7 +911,10 @@ async def sect_list_(bot: Bot, event: GroupMessageEvent):
     msg = ''
     msg_list = []
     for sect in sectlists:
-        user_name = sql_message.get_user_message(sect.sect_owner).user_name
+        try:
+            user_name = sql_message.get_user_message(int(sect.sect_owner)).user_name
+        except AttributeError:
+            print(user_name)
         msg += f'编号{sect.sect_id}:{sect.sect_name}，宗主：{user_name}，宗门建设度：{sect.sect_scale}\n'
         msg_list.append(f'编号{sect.sect_id}:{sect.sect_name}，宗主：{user_name}，宗门建设度：{sect.sect_scale}')
 
