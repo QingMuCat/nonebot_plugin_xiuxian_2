@@ -1,7 +1,7 @@
 [project]
 name = "nonebot_plugin_xiuxian_2"
 description = "基于nonebot2的修仙文游"
-version = "2.7.2"
+version = "2.7.2.1"
 authors = [
     {name = "青木", email = "1242550160@qq.com"},
 ]
@@ -21,6 +21,7 @@ dependencies = [
             'wcwidth==0.2.6',
             'websockets==10.4',
             'wget==3.2',
+            'aiohttp==3.8.4',
 ]
 
 [project.urls]
