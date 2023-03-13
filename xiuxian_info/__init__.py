@@ -33,7 +33,7 @@ async def xiuxian_message_(bot: Bot, event: GroupMessageEvent):
     user_id = user_info.user_id
     user_info = sql_message.get_user_real_info(user_id)
     user_name = user_info.user_name
-    user_num = user_info.id-100
+    user_num = user_info.id
     rank = sql_message.get_exp_rank(user_id)
     user_rank = int(rank[0])
     stone = sql_message.get_stone_rank(user_id)
