@@ -255,6 +255,7 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
         await do_work.finish()
 
     if mode == "刷新":  # 刷新逻辑
+        stone_use = 0 #悬赏令刷新提示是否扣灵石
         if user_cd_message.type == 2:
             work_time = datetime.strptime(
                 user_cd_message.create_time, "%Y-%m-%d %H:%M:%S.%f"
@@ -290,13 +291,7 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                 await do_work.finish()
             else:
                 sql_message.update_ls(user_id, lscost, 2)
-                msg = f"道友消耗灵石{lscost}枚，成功刷新悬赏令"
-                if XiuConfig().img:
-                    pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
-                    await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
-                else:
-                    await bot.send_group_msg(group_id=int(send_group_id), message=msg)
-                await do_work.finish()
+                stone_use = 1
 
         work_msg = workhandle().do_work(0, level=user_level, exp=user_info.exp, user_id=user_id)
         n = 1
@@ -307,6 +302,8 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
             work_msg_f += f"{n}、{get_work_msg(i)}"
             n += 1
         work_msg_f += f"(悬赏令每日免费刷新次数：{count}，超过{count}次后，下次刷新消耗灵石{lscost},今日可免费刷新次数：{freenum}次)"
+        if int(stone_use) == 1:
+            work_msg_f += f"\n道友消耗灵石{lscost}枚，成功刷新悬赏令"
         work[user_id] = do_is_work(user_id)
         work[user_id].msg = work_msg_f
         work[user_id].world = work_list
