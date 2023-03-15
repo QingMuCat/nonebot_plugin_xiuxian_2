@@ -288,6 +288,15 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
                 else:
                     await bot.send_group_msg(group_id=int(send_group_id), message=msg)
                 await do_work.finish()
+            else:
+                sql_message.update_ls(user_id, lscost, 2)
+                msg = f"道友消耗灵石{lscost}枚，成功刷新悬赏令"
+                if XiuConfig().img:
+                    pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
+                    await bot.send_group_msg(group_id=int(send_group_id), message=MessageSegment.image(pic))
+                else:
+                    await bot.send_group_msg(group_id=int(send_group_id), message=msg)
+                await do_work.finish()
 
         work_msg = workhandle().do_work(0, level=user_level, exp=user_info.exp, user_id=user_id)
         n = 1
@@ -303,8 +312,6 @@ async def do_work_(bot: Bot, event: GroupMessageEvent, args: Tuple[Any, ...] = R
         work[user_id].world = work_list
 
         refreshnum[user_id] = usernums + 1
-        if freenum == 0:
-            sql_message.update_ls(user_id, lscost, 2)
         msg = work[user_id].msg
         if XiuConfig().img:
             pic = await get_msg_pic(f"@{event.sender.nickname}\n" + msg)
