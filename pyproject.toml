@@ -1,7 +1,7 @@
 [project]
 name = "nonebot_plugin_xiuxian_2"
 description = "基于nonebot2的修仙文游"
-version = "2.8.2"
+version = "2.8.4"
 authors = [
     {name = "青木", email = "1242550160@qq.com"},
 ]
