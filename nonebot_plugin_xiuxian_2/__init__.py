@@ -3,4 +3,4 @@ from nonebot import require, load_plugins
 
 dir_ = Path(__file__).parent
 require('nonebot_plugin_apscheduler')
-load_plugins(str(dir_ / "nonebot_plugin_xiuxian_2"))
+load_plugins(str(dir_ / "xiuxian"))
