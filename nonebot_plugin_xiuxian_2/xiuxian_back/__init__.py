@@ -23,7 +23,7 @@ from .back_util import (
     get_item_msg, get_item_msg_rank, check_use_elixir,
     get_use_jlq_msg, get_no_use_equipment_sql
 )
-from .backconfig import get_config, savef
+from backconfig import get_config, savef
 from ..item_json import Items
 from ..read_buff import (
     get_weapon_info_msg, get_armor_info_msg,
