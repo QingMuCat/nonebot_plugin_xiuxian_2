@@ -41,11 +41,11 @@ except:
 
 require('nonebot_plugin_apscheduler')
 
-if get_plugin_by_module_name("xiuxian"):
-    logger.info("推荐直接加载 xiuxian 仓库文件夹")
+if get_plugin_by_module_name("nonebot_plugin_xiuxian_2"):
+    logger.info("推荐直接加载 nonebot_plugin_xiuxian_2 仓库文件夹")
     load_all_plugins(
         [
-            f"xiuxian.{module.name}"
+            f"nonebot_plugin_xiuxian_2.{module.name}"
             for module in iter_modules([str(Path(__file__).parent)])
             if module.ispkg
             and (
