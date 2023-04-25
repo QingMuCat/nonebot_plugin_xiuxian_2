@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8", errors="ignore") as f:
     long_description = f.read()
     setuptools.setup(
     name='nonebot_plugin_xiuxian_2',
-    version='2.8.6.6',
+    version='2.9.0.0',
     author='QingmuCat',
     author_email='1242550160@qq.com',
     keywords=["pip", "nonebot2", "文游", "修仙"],
