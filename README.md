@@ -25,7 +25,11 @@ _✨ QQ群聊修仙文字游戏✨_
 
 一款适用于QQ群的修仙插件,设定征集中，有好的想法可以推送给我哦~~~
 
+
 ## 💿 安装
+
+详情可见 [文档](https://xiuxian.netlify.app/)
+
 ### 下载
 
 1. 通过包管理器安装，可以通过nb，pip，或者poetry等方式安装，以pip为例
@@ -42,7 +46,7 @@ git clone https://ghproxy.com/https://github.com/QingMuCat/nonebot_plugin_xiuxia
 
 2、如果遇到问题，请先百度和查看下方的 【一些问题】
 
-3、如解决不了进交流群：760517008 提问，提问请贴上完整的日志
+3、如解决不了进交流群：[760517008](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=zIKrPPqNStgZnRtuLhiOv9woBQSMQurq&authKey=Nrqm0zDxYKP2Fon2MskbNRmZ588Rqm79lJvQyVYWtkh9vDFK1RGBK0UhqzehVyDw&noverify=0&group_code=760517008) 提问，提问请贴上完整的日志
 
 
 ## 配置文件
@@ -65,7 +69,7 @@ self.layout_bot_dict = {{}}  # QQ所负责的群聊{{群 :bot}}   其中 bot类�
 当后面qq号为一个字符串时为一对一，为列表时为多对一<br>
 ```
 ## 一些问题
-- 当为放置为plugins目录使用时，请修改根目录下__init__.py文件中的42行：src=''中的内容，填写的是存放插件的目录，一般情况下 src='src.plugins.'  如有不同请按照格式修改
+
 - pip install的填这个
   ```
      plugins = ["nonebot_plugin_xiuxian_2"]
@@ -98,7 +102,7 @@ self.layout_bot_dict = {{}}  # QQ所负责的群聊{{群 :bot}}   其中 bot类�
 - 大家喜欢的话可以给这个项目点个star
 
 - 有bug、意见和建议都欢迎提交 [Issues](https://github.com/QingMuCat/nonebot_plugin_xiuxian_2.0/issues) 
-- 或者联系进入QQ交流群：760517008
+- 或者联系进入QQ交流群：[760517008](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=zIKrPPqNStgZnRtuLhiOv9woBQSMQurq&authKey=Nrqm0zDxYKP2Fon2MskbNRmZ588Rqm79lJvQyVYWtkh9vDFK1RGBK0UhqzehVyDw&noverify=0&group_code=760517008)
 - 3.0版本正在路上，敬请期待
 
 # 许可证
