@@ -27,7 +27,7 @@ SectInfo = namedtuple("SectInfo",
                        "sect_materials", "mainbuff", "secbuff", "elixir_room_level"])
 BuffInfo = namedtuple("BuffInfo",
                       ["id", "user_id", "main_buff", "sec_buff", "faqi_buff", "fabao_weapon", "armor_buff", "atk_buff",
-                       "blessed_spot"])
+                       "blessed_spot", "sub_buff"])
 back = namedtuple("back", ["user_id", "goods_id", "goods_name", "goods_type", "goods_num", "create_time", "update_time",
                            "remake", "day_num", "all_num", "action_time", "state", "bind_num"])
 
