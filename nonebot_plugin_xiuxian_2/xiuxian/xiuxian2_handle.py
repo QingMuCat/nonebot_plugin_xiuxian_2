@@ -153,7 +153,8 @@ class XiuxianDateManage:
   "main_buff" integer DEFAULT 0,
   "sec_buff" integer DEFAULT 0,
   "faqi_buff" integer DEFAULT 0,
-  "fabao_weapon" integer DEFAULT 0
+  "fabao_weapon" integer DEFAULT 0,
+  "sub_buff" integer DEFAULT 0
 );""")
 
         for i in XiuConfig().sql_user_xiuxian:
