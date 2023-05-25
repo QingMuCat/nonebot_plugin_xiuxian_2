@@ -1,0 +1,45 @@
+[build-system]
+requires = ["poetry-core>=1.2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "nonebot-plugin-xiuxian-2"
+version = "2.9.0rc1"
+description = "基于Nonebot2修仙文字游戏"
+authors = ["青木 <1242550160@qq.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+homepage = "https://github.com/QingMuCat/nonebot_plugin_xiuxian_2"
+repository = "https://github.com/QingMuCat/nonebot_plugin_xiuxian_2"
+documentation = "https://github.com/QingMuCat/nonebot_plugin_xiuxian_2"
+packages = [
+    { include = "nonebot_plugin_xiuxian_2" }
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/QingMuCat/nonebot_plugin_xiuxian_2/issues"
+
+[tool.poetry.dependencies]
+python = "^3.8.0"
+nonebot2 = "^2.0.0rc4"
+nonebot-adapter-onebot = "^2.2.3"
+nonebot-plugin-apscheduler = "^0.2.0"
+aiohttp = "^3.8.4"
+ujson = "^5.7.0"
+numpy = "^1.23.5"
+Pillow = "^9.4.0"
+urllib3 = "^1.26.7"
+uvicorn = "^0.20.0"
+wcwidth = "^0.2.6"
+websockets = "^10.4"
+wget = "^3.2"
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "http://mirrors.aliyun.com/pypi/simple"
+default = true
+
+[tool.poetry.group.test.dependencies]
+nonebug = "^0.3.0"
+pytest = "^7.2.0"
+pytest-asyncio = "^0.20.3"
