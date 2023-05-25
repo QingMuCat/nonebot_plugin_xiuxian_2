@@ -1,39 +1,33 @@
-name: Upload Python Package gotwo
+name: Upload Python Package
 
 on:
   # 当master分支有push时，触发action
-  push: 
+  push:
     branches:
     - master
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
-    name: publish python package to PYPI
-    # 此作业在 Linux 上运行
+
     runs-on: ubuntu-latest
 
     steps:
-    # 此步骤使用 GitHub 的 https://github.com/actions/checkout
-    - uses: actions/checkout@v2
-    
-    # 设置python环境
-    # 此步骤使用 GitHub 的 https://github.com/actions/setup-python
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: '3.11'
-    
-    # 安装依赖
+        python-version: '3.10'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine
-    
-    # 构建和发布
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        python setup.py sdist bdist_wheel
-        twine upload dist/*
+        pip install build
+    - name: Build package
+      run: python -m build
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
