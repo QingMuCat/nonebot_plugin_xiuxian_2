@@ -121,38 +121,48 @@ async def set_boss_():
 
 
 async def send_bot(group_id:str):
-        api = 'send_group_msg'
-        data = {'group_id': int(group_id)}
-        try:
-            group_boss[group_id]
-        except:
-            group_boss[group_id] = []
+    #初始化
+    if not group_id in group_boss:
+        group_boss[group_id] = []     
 
-        if len(group_boss[group_id]) >= config['Boss个数上限']:
-            pass
+    if len(group_boss[group_id]) >= config['Boss个数上限']:
+        #到boss生成上限了，直接跳过
+        return
+    
+    api = 'send_group_msg' #要调用的函数
+    data = {'group_id': int(group_id)} #要发送的群
+    
+    bossinfo = createboss()
+    group_boss[group_id].append(bossinfo)
+    msg = f"已生成{bossinfo['jj']}Boss:{bossinfo['name']},诸位道友请击Boss得奖励吧!"
+    if XiuConfig().img:
+        pic = await get_msg_pic(f"@全体修仙者\n" + msg)
+        data['message'] = MessageSegment.image(pic)
+    else:
+        data['message'] = MessageSegment.text(msg)
+        
+    try:
+        bot_id = layout_bot_dict[group_id] if group_id in layout_bot_dict else put_bot[0]
+    except:
+        bot = get_bot()
+        bot_id = bot.self_id
+        
+    try:
+        if type(bot_id) is str:
+            await get_bots()[bot_id].call_api(api, **data)
+        elif type(bot_id) is list:
+            await get_bots()[random.choice(bot_id)].call_api(api,**data)
         else:
-            bossinfo = createboss()
-            group_boss[group_id].append(bossinfo)
-            msg = f"已生成{bossinfo['jj']}Boss:{bossinfo['name']},诸位道友请击败Boss获得奖励吧!"
-            if XiuConfig().img:
-                pic = await get_msg_pic(f"@全体修仙者\n" + msg)
-                data['message'] = MessageSegment.image(pic)
-            else:
-                data['message'] = MessageSegment.text(msg)
-            try:
-                bot_id = layout_bot_dict[group_id]
-            except:
-                bot_id = put_bot[0]
-            try:
-                if type(bot_id) is str:
-                    await get_bots()[bot_id].call_api(api, **data)
-                elif type(bot_id) is list:
-                    await get_bots()[random.choice(bot_id)].call_api(api, **data)
-                else:
-                    await get_bots()[put_bot[0]].call_api(api, **data)
-            except:
-                 await get_bot().call_api(api, **data)   
-            logger.info(f"群{group_id}_已生成世界boss")
+            await get_bots()[put_bot[0]].call_api(api, **data)
+            
+    except:
+        if group_id not in bot.get_group_list():
+            logger.warning(f"群{group_id}不存在,请检查配置文件!")
+            return
+        else:
+            await get_bot().call_api(api, **data)   
+        
+    logger.info(f"群{group_id}_已生成世界boss")
 
 
 @DRIVER.on_shutdown
