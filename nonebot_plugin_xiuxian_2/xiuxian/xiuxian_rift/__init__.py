@@ -74,7 +74,7 @@ async def save_rift_():
 
 
 # 定时任务生成群秘境
-@set_rift.scheduled_job("cron", hour=18, minute=30)
+@set_rift.scheduled_job("cron", hour=11, minute=51)
 async def set_rift_():
     global group_rift
     # bot = get_bots()[put_bot[0]]

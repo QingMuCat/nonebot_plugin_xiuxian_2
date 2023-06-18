@@ -53,11 +53,11 @@ def limit_all_run(user_id: str):
         return None
 
 _chat_flmt_notice = random.choice(
-    ["慢...慢一..点❤，还有{}秒，让我在歇会！",
-     "冷静一下，还有{}秒，让我在歇会！",
+    ["慢...慢一..点❤，还有{}秒，让我再歇会！",
+     "冷静一下，还有{}秒，让我再歇会！",
      "时间还没到，还有{}秒，歇会歇会~~"]
 )
-bu_ji_notice = random.choice(["别急！","急也没有!","让我先急!"])
+bu_ji_notice = random.choice(["别急！","急也没用!","让我先急!"])
 
 class CooldownIsolateLevel(IntEnum):
     """命令冷却的隔离级别"""
