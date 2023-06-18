@@ -74,7 +74,7 @@ async def save_rift_():
 
 
 # 定时任务生成群秘境
-@set_rift.scheduled_job("cron", hour=18, minute=30)
+@set_rift.scheduled_job("cron", hour=18, minute=50)
 async def set_rift_():
     global group_rift
     # bot = get_bots()[put_bot[0]]
@@ -90,7 +90,10 @@ async def set_rift_():
             group_rift[group_id] = rift
             msg = f"秘境已刷新，野生的{rift.name}已开启！可探索次数：{rift.count}次，请诸位道友发送 探索秘境 来加入吧！"
             pic = await get_msg_pic(msg)  #
-            await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(pic))
+            try:
+                await bot.send_group_msg(group_id=int(group_id),message=MessageSegment.image(pic))
+            except:
+                logger.warning(f"群{group_id}秘境消息发送失败，大概率是机器人不在此群里！")               
 
 
 @rift_help.handle(parameterless=[Cooldown(at_sender=True)])
