@@ -32,6 +32,10 @@ sql_message = XiuxianDateManage()  # sql类
 def createboss():
     top_user_info = sql_message.get_top1_user()
     top_user_level = top_user_info.level
+    
+    if top_user_level == "江湖好手":
+        top_user_level = "搬血境"
+    
     if top_user_level == "祭道之上":
         level = top_user_level[:4]
     else:
