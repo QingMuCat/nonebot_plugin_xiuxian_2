@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "nonebot-plugin-xiuxian-2"
-version = "2.9.1rc1"
+version = "2.9.1rc2"
 description = "基于Nonebot2修仙文字游戏"
 authors = ["青木 <1242550160@qq.com>"]
 license = "GPL-3.0-or-later"
