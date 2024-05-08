@@ -255,7 +255,7 @@ class Txt2Img:
                 base_cc = boss_img.height / img_hight
                 boss_img_w = int(boss_img.width / base_cc)
                 boss_img_h = int(boss_img.height / base_cc)
-                boss_img = boss_img.resize((int(boss_img_w), int(boss_img_h)), Image.ANTIALIAS)
+                boss_img = boss_img.resize((int(boss_img_w), int(boss_img_h)),Image.Resampling.LANCZOS)
                 out_img.paste(
                     boss_img,
                     (int(img_width - boss_img_w), int(img_hight - boss_img_h)),
