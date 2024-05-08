@@ -33,7 +33,8 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
     based_h = 2250
     # 获取背景图
     try:
-        img = Image.open(BytesIO(await get_anime_pic())).convert("RGBA")
+        img_url = await get_anime_pic()
+        img = Image.open(BytesIO(await async_request(img_url))).convert("RGBA")
         # 居中裁剪背景
         img_w, img_h = img.size
         scale = based_w / img_w
@@ -48,7 +49,7 @@ async def draw_user_info_img(user_id, DETAIL_MAP):
             img_h = scaled_h
             crop_t = round((img_h / 2) - (based_h / 2))
             img = img.resize((based_w, img_h)).crop((0, crop_t, based_w, crop_t + based_h))
-        img.resize((based_w, based_h), Image.ANTIALIAS)
+        img.resize((based_w, based_h), Image.Resampling.LANCZOS)
         # 贴一层黑色遮罩
         img.paste(i := Image.new("RGBA", (based_w, based_h), (0, 0, 0, 168)), mask=i)
     except:
@@ -197,7 +198,9 @@ async def img_author(img, bg):
 async def linewh(line, word):
     lw, lh = line.size
     gs_font_36 = font_origin(36)
-    w, h = gs_font_36.getsize(word)
+    left, top, right, bottom = gs_font_36.getbbox(word)
+    w = right - left  # 计算文本宽度
+    # 仅使用宽度信息计算水平居中位置
     return (lw - w) / 2, lh / 2
 
 async def async_request(url, *args, is_text=False, **kwargs):
@@ -207,6 +210,10 @@ async def async_request(url, *args, is_text=False, **kwargs):
 
 async def get_anime_pic():
     r: str = await async_request(
-        "https://api.gmit.vip/Api/DmImg?format=json", is_text=True
+        "https://imgapi.cn/api.php?zd=mobile&fl=dongman&gs=json", is_text=True
     )
-    return await async_request(json.loads(r)["data"]["url"])
+    response_json = json.loads(r)
+    if response_json["code"] == "200":
+        return response_json["imgurl"]
+    else:
+        logger.opt(colors=True).info("<red>API 返回错误码：</red>" + response_json["code"])
